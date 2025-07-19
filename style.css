@@ -302,8 +302,8 @@ body::before {
 
 .vault-mapping {
     display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 3rem;
+    grid-template-columns: 1fr 3fr;
+    gap: 4rem;
     align-items: center;
     padding: 3rem 0;
     margin-bottom: 6rem;
@@ -323,6 +323,7 @@ body::before {
 
 .mapping-description {
     padding: 1rem 0;
+    max-width: 320px;
 }
 
 .mapping-description h3 {
@@ -398,6 +399,8 @@ body::before {
     .mapping-description {
         text-align: center;
         padding: 1rem 0;
+        max-width: none;
+        margin: 0 auto;
     }
     
     .mapping-description h3 {
