@@ -3,6 +3,21 @@ const stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
 
 console.log('Stripe initialized with key ending in:', 'pk_test_TYooMQauvdEDq54NiTphI7jx'.slice(-10));
 
+// Add diagnostic function
+function diagnosePaymentState() {
+    console.log('=== PAYMENT DIAGNOSTIC ===');
+    console.log('isPaymentReady:', isPaymentReady);
+    console.log('elements exists:', !!elements);
+    console.log('paymentElement exists:', !!paymentElement);
+    console.log('payment-element div exists:', !!document.querySelector('#payment-element'));
+    console.log('payment button exists:', !!document.querySelector('.payment-button'));
+    console.log('payment button disabled:', document.querySelector('.payment-button')?.disabled);
+    console.log('========================');
+}
+
+// Make diagnostic available globally for manual testing
+window.diagnosePayment = diagnosePaymentState;
+
 let elements;
 let paymentElement;
 let isPaymentReady = false;
@@ -68,6 +83,7 @@ async function initializePayment() {
             console.log('Payment element is ready');
             isPaymentReady = true;
             updateSubmitButton();
+            diagnosePaymentState();
         });
         
         paymentElement.on('change', (event) => {
