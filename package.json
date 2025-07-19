@@ -1,0 +1,19 @@
+{
+  "name": "vault-web",
+  "version": "1.0.0",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo 'Static site - no build needed'",
+    "start": "echo 'Static site deployed'",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["vault", "offline", "knowledge", "static-site"],
+  "author": "",
+  "license": "ISC",
+  "description": "Go Offline - All of humanity's knowledge on a drive",
+  "dependencies": {
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "stripe": "^18.3.0"
+  }
+}

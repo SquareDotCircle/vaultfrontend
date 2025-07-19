@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go Offline - Secure Checkout</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="payment-container">
+        <div class="payment-box">
+            <h2 class="payment-title">Secure Checkout</h2>
+            
+            <div class="product-info">
+                <img src="b03d9511cf71e369da21cf51fc711342.jpg" alt="Offline Device" class="product-image">
+                <div class="product-details">
+                    <h3 class="product-name">Go Offline</h3>
+                    <p class="product-desc">Offline Knowledge Device - 256GB</p>
+                </div>
+                <p class="product-price">$299</p>
+            </div>
+
+            <p class="payment-tagline">All of humanity's knowledge - offline, forever yours.</p>
+
+            <div id="shipping-summary" class="shipping-summary" style="display: none;">
+                <h4>Shipping to:</h4>
+                <div id="shipping-details"></div>
+            </div>
+
+            <form id="payment-form">
+                <div id="payment-element">
+                  <!-- A Stripe Payment Element will be inserted here. -->
+                </div>
+                <button class="cta-button primary payment-button" id="submit">Pay $299</button>
+                <div id="payment-message" class="hidden"></div>
+            </form>
+            <p class="stripe-info">Powered by <strong>Stripe</strong></p>
+        </div>
+    </div>
+
+    <nav class="full-nav">
+        <a href="index.html">Home</a>
+        <a href="features.html">Features</a>
+        <a href="how-it-works.html">How It Works</a>
+        <a href="payment.html" class="cta-nav active">Get One</a>
+    </nav>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="payment.js"></script>
+</body>
+</html> 

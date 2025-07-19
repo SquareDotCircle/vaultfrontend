@@ -1,0 +1,25 @@
+# Large video files (too big for GitHub)
+*.mov
+*.mp4
+*.avi
+*.mkv
+
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+.env.local
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock 
