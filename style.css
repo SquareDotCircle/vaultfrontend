@@ -195,14 +195,21 @@ body::before {
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 3rem;
-    margin-bottom: 4rem;
+    margin-bottom: 6rem;
     align-items: center;
-    background: rgba(10, 10, 10, 0.6);
-    border: 1px solid rgba(255, 221, 0, 0.2);
-    border-radius: 16px;
-    padding: 2rem;
-    backdrop-filter: blur(15px);
-    transition: transform 0.3s ease;
+    padding: 3rem 0;
+    position: relative;
+}
+
+.vault-demo::after {
+    content: '';
+    position: absolute;
+    bottom: -3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 221, 0, 0.6), transparent);
 }
 
 .demo-video {
@@ -258,6 +265,8 @@ body::before {
     .vault-demo {
         grid-template-columns: 1fr;
         gap: 2rem;
+        margin-bottom: 4rem;
+        padding: 2rem 0;
     }
     
     .demo-description {
@@ -284,6 +293,11 @@ body::before {
     .demo-video.scrolled {
         transform: scale(1);
     }
+    
+    .vault-demo::after {
+        bottom: -2rem;
+        width: 90%;
+    }
 }
 
 .vault-mapping {
@@ -291,13 +305,20 @@ body::before {
     grid-template-columns: 1fr 2fr;
     gap: 3rem;
     align-items: center;
-    background: rgba(10, 10, 10, 0.6);
-    border: 1px solid rgba(255, 221, 0, 0.2);
-    border-radius: 16px;
-    padding: 2rem;
-    backdrop-filter: blur(15px);
-    transition: transform 0.3s ease;
-    margin-bottom: 4rem;
+    padding: 3rem 0;
+    margin-bottom: 6rem;
+    position: relative;
+}
+
+.vault-mapping::after {
+    content: '';
+    position: absolute;
+    bottom: -3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 221, 0, 0.6), transparent);
 }
 
 .mapping-description {
@@ -370,6 +391,8 @@ body::before {
     .vault-mapping {
         grid-template-columns: 1fr;
         gap: 2rem;
+        margin-bottom: 4rem;
+        padding: 2rem 0;
     }
     
     .mapping-description {
@@ -397,17 +420,29 @@ body::before {
     .mapping-video.scrolled {
         transform: scale(1);
     }
+    
+    .vault-mapping::after {
+        bottom: -2rem;
+        width: 90%;
+    }
 }
 
 /* Vault Customization Section */
 .vault-customization {
-    background: rgba(10, 10, 10, 0.6);
-    border: 1px solid rgba(255, 221, 0, 0.2);
-    border-radius: 16px;
-    padding: 2rem;
-    backdrop-filter: blur(15px);
-    transition: transform 0.3s ease;
-    margin-bottom: 4rem;
+    padding: 3rem 0;
+    margin-bottom: 6rem;
+    position: relative;
+}
+
+.vault-customization::after {
+    content: '';
+    position: absolute;
+    bottom: -3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 221, 0, 0.6), transparent);
 }
 
 .customization-content {
@@ -485,8 +520,8 @@ body::before {
 /* Responsive design for customization section */
 @media (max-width: 768px) {
     .vault-customization {
-        padding: 1.5rem;
-        margin-bottom: 3rem;
+        padding: 2rem 0;
+        margin-bottom: 4rem;
     }
     
     .customization-content {
@@ -512,6 +547,11 @@ body::before {
     
     .customization-video.scrolled {
         transform: scale(1);
+    }
+    
+    .vault-customization::after {
+        bottom: -2rem;
+        width: 90%;
     }
 }
 
