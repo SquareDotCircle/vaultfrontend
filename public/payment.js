@@ -2,58 +2,105 @@
 const stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
 
 let elements;
+let paymentElement;
 
-initialize();
-
-document
-  .querySelector("#payment-form")
-  .addEventListener("submit", handleSubmit);
-
-// Display shipping information if available
+// Display shipping information first
 displayShippingInfo();
 
+// Initialize payment when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    addBackButton();
+    initializePayment();
+});
+
+// Add form submit handler
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector("#payment-form").addEventListener("submit", handleSubmit);
+});
+
 // Fetches a payment intent and captures the client secret
-async function initialize() {
-  const shippingInfo = sessionStorage.getItem('shippingInfo');
-  const shippingMethod = shippingInfo ? JSON.parse(shippingInfo).shipping : 'standard';
-  
-  const response = await fetch("/api/create-payment-intent", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ shippingMethod }),
-  });
-  const { clientSecret } = await response.json();
+async function initializePayment() {
+    try {
+        // Show loading state
+        showLoadingState();
+        
+        const shippingInfo = sessionStorage.getItem('shippingInfo');
+        const shippingMethod = shippingInfo ? JSON.parse(shippingInfo).shipping : 'standard';
+        
+        console.log('Creating payment intent with shipping method:', shippingMethod);
+        
+        const response = await fetch("/api/create-payment-intent", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ shippingMethod }),
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Payment intent response:', data);
+        
+        if (!data.clientSecret) {
+            throw new Error('No client secret received from server');
+        }
 
-  elements = stripe.elements({ clientSecret });
-
-  const paymentElement = elements.create("payment");
-  paymentElement.mount("#payment-element");
+        elements = stripe.elements({ clientSecret: data.clientSecret });
+        paymentElement = elements.create("payment");
+        
+        // Mount the payment element
+        paymentElement.mount("#payment-element");
+        
+        // Hide loading state
+        hideLoadingState();
+        
+        console.log('Payment element mounted successfully');
+        
+    } catch (error) {
+        console.error('Error initializing payment:', error);
+        showError(`Failed to initialize payment: ${error.message}`);
+        hideLoadingState();
+    }
 }
 
 async function handleSubmit(e) {
-  e.preventDefault();
-  setLoading(true);
+    e.preventDefault();
+    
+    if (!elements || !paymentElement) {
+        showMessage("Payment form not ready. Please wait or refresh the page.");
+        return;
+    }
+    
+    setLoading(true);
 
-  const { error } = await stripe.confirmPayment({
-    elements,
-    confirmParams: {
-      // Make sure to change this to your payment completion page
-      return_url: `${window.location.origin}/payment.html`,
-    },
-  });
+    try {
+        const { error } = await stripe.confirmPayment({
+            elements,
+            confirmParams: {
+                return_url: `${window.location.origin}/payment.html`,
+            },
+        });
 
-  // This point will only be reached if there is an immediate error when
-  // confirming the payment. Otherwise, your customer will be redirected to
-  // your `return_url`. For some payment methods like iDEAL, your customer will
-  // be redirected to an intermediate site first to authorize the payment, then
-  // redirected to the `return_url`.
-  if (error.type === "card_error" || error.type === "validation_error") {
-    showMessage(error.message);
-  } else {
-    showMessage("An unexpected error occurred.");
-  }
+        // This point will only be reached if there is an immediate error when
+        // confirming the payment. Otherwise, your customer will be redirected to
+        // your `return_url`. For some payment methods like iDEAL, your customer will
+        // be redirected to an intermediate site first to authorize the payment, then
+        // redirected to the `return_url`.
+        if (error) {
+            console.error('Payment confirmation error:', error);
+            if (error.type === "card_error" || error.type === "validation_error") {
+                showMessage(error.message);
+            } else {
+                showMessage("An unexpected error occurred. Please try again.");
+            }
+        }
+    } catch (err) {
+        console.error('Unexpected error during payment confirmation:', err);
+        showMessage("An unexpected error occurred. Please try again.");
+    }
 
-  setLoading(false);
+    setLoading(false);
 }
 
 
@@ -69,6 +116,38 @@ function showMessage(messageText) {
     messageContainer.classList.add("hidden");
     messageContainer.textContent = "";
   }, 4000);
+}
+
+function showError(errorText) {
+    const paymentElement = document.querySelector("#payment-element");
+    paymentElement.innerHTML = `
+        <div style="padding: 20px; text-align: center; color: #e74c3c; border: 1px solid #e74c3c; border-radius: 4px; margin: 10px 0;">
+            <p><strong>Error:</strong> ${errorText}</p>
+            <button onclick="initializePayment()" style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-top: 10px;">
+                Try Again
+            </button>
+        </div>
+    `;
+}
+
+function showLoadingState() {
+    const paymentElement = document.querySelector("#payment-element");
+    paymentElement.innerHTML = `
+        <div style="padding: 20px; text-align: center; color: #666;">
+            <div style="display: inline-block; width: 20px; height: 20px; border: 3px solid #f3f3f3; border-top: 3px solid #007bff; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <p style="margin-top: 10px;">Loading payment form...</p>
+        </div>
+        <style>
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        </style>
+    `;
+}
+
+function hideLoadingState() {
+    // The loading state will be replaced by the Stripe payment element
 }
 
 // Show a spinner on payment submission
@@ -133,10 +212,7 @@ function addBackButton() {
     paymentBox.insertBefore(backButton, form);
 }
 
-// Call this after the page loads
-document.addEventListener('DOMContentLoaded', function() {
-    addBackButton();
-});
+// addBackButton is now called in the main DOMContentLoaded listener above
 
 // Check the payment status on this page after redirect.
 document.addEventListener('DOMContentLoaded', async () => {
