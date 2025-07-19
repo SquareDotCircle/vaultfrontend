@@ -1,9 +1,3 @@
-# Large video files (too big for GitHub)
-*.mov
-*.mp4
-*.avi
-*.mkv
-
 # Node modules
 node_modules/
 
