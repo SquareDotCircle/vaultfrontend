@@ -88,25 +88,6 @@ body.scrollable {
     transform: scale(1.03);
 }
 
-/* Overlay Graphic */
-.overlay-graphic {
-    position: fixed;
-    top: 3rem;
-    right: 4rem;
-    width: 200px;
-    height: 200px;
-    z-index: 3;
-    pointer-events: none;
-    opacity: 0.8;
-}
-
-.overlay-graphic img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: center;
-}
-
 /* Main Container */
 .container {
     display: flex;
