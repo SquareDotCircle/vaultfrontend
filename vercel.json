@@ -1,7 +1,4 @@
 {
-  "buildCommand": "echo 'Static site ready'",
-  "outputDirectory": ".",
-  "installCommand": "npm install",
   "headers": [
     {
       "source": "/(.*).html",
@@ -37,12 +34,6 @@
           "value": "1; mode=block"
         }
       ]
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/",
-      "destination": "/index.html"
     }
   ]
 } 

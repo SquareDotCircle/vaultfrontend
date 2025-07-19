@@ -17,7 +17,7 @@ async function initialize() {
   const shippingInfo = sessionStorage.getItem('shippingInfo');
   const shippingMethod = shippingInfo ? JSON.parse(shippingInfo).shipping : 'standard';
   
-  const response = await fetch("/create-payment-intent", {
+  const response = await fetch("/api/create-payment-intent", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ shippingMethod }),
