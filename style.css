@@ -302,8 +302,8 @@ body::before {
 
 .vault-mapping {
     display: grid;
-    grid-template-columns: 1fr 3fr;
-    gap: 4rem;
+    grid-template-columns: 1fr 4fr;
+    gap: 2rem;
     align-items: center;
     padding: 3rem 0;
     margin-bottom: 6rem;
@@ -365,13 +365,13 @@ body::before {
     position: relative;
     overflow: hidden;
     border-radius: 12px;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
-    transform: scale(0.9) translateX(50px);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+    transform: scale(0.95) translateX(50px);
     transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .mapping-video.scrolled {
-    transform: scale(1.05) translateX(0);
+    transform: scale(1.15) translateX(0);
 }
 
 .mapping-video video {
@@ -416,12 +416,12 @@ body::before {
     }
     
     .mapping-video {
-        transform: scale(0.95);
+        transform: scale(1.0);
         order: -1;
     }
     
     .mapping-video.scrolled {
-        transform: scale(1.02);
+        transform: scale(1.1);
     }
     
     .vault-mapping::after {
