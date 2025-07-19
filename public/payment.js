@@ -5,6 +5,7 @@ console.log('Stripe initialized with key ending in:', 'pk_test_TYooMQauvdEDq54Ni
 
 let elements;
 let paymentElement;
+let isPaymentReady = false;
 
 // Display shipping information first
 displayShippingInfo();
@@ -12,6 +13,7 @@ displayShippingInfo();
 // Initialize payment when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
     addBackButton();
+    updateSubmitButton(); // Set initial button state
     initializePayment();
 });
 
@@ -64,6 +66,8 @@ async function initializePayment() {
         // Add error handling for mounting
         paymentElement.on('ready', () => {
             console.log('Payment element is ready');
+            isPaymentReady = true;
+            updateSubmitButton();
         });
         
         paymentElement.on('change', (event) => {
@@ -77,6 +81,10 @@ async function initializePayment() {
         try {
             await paymentElement.mount("#payment-element");
             console.log('Payment element mounted successfully');
+            
+            // Small delay to ensure everything is fully ready
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
         } catch (mountError) {
             console.error('Error mounting payment element:', mountError);
             throw new Error(`Failed to mount payment element: ${mountError.message}`);
@@ -97,8 +105,8 @@ async function initializePayment() {
 async function handleSubmit(e) {
     e.preventDefault();
     
-    if (!elements || !paymentElement) {
-        showMessage("Payment form not ready. Please wait or refresh the page.");
+    if (!elements || !paymentElement || !isPaymentReady) {
+        showMessage("Payment form is still loading. Please wait a moment and try again.");
         return;
     }
     
@@ -193,6 +201,20 @@ function showLoadingState() {
 
 function hideLoadingState() {
     // The loading state will be replaced by the Stripe payment element
+}
+
+function updateSubmitButton() {
+    const button = document.querySelector('.payment-button');
+    if (button) {
+        if (isPaymentReady) {
+            button.disabled = false;
+            button.textContent = button.textContent.replace('Loading...', 'Pay');
+            console.log('Payment button enabled - ready for submission');
+        } else {
+            button.disabled = true;
+            button.textContent = 'Loading...';
+        }
+    }
 }
 
 // Show a spinner on payment submission
