@@ -1,6 +1,8 @@
 // Use a real, public test key.
 const stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
 
+console.log('Stripe initialized with key ending in:', 'pk_test_TYooMQauvdEDq54NiTphI7jx'.slice(-10));
+
 let elements;
 let paymentElement;
 
@@ -39,8 +41,18 @@ async function initializePayment() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
-        const data = await response.json();
-        console.log('Payment intent response:', data);
+        const responseText = await response.text();
+        console.log('Raw API response:', responseText);
+        
+        let data;
+        try {
+            data = JSON.parse(responseText);
+        } catch (parseError) {
+            console.error('Failed to parse JSON response:', parseError);
+            throw new Error('Invalid response from server');
+        }
+        
+        console.log('Parsed payment intent response:', data);
         
         if (!data.clientSecret) {
             throw new Error('No client secret received from server');
@@ -49,8 +61,26 @@ async function initializePayment() {
         elements = stripe.elements({ clientSecret: data.clientSecret });
         paymentElement = elements.create("payment");
         
+        // Add error handling for mounting
+        paymentElement.on('ready', () => {
+            console.log('Payment element is ready');
+        });
+        
+        paymentElement.on('change', (event) => {
+            if (event.error) {
+                console.error('Payment element error:', event.error);
+                showMessage(event.error.message);
+            }
+        });
+        
         // Mount the payment element
-        paymentElement.mount("#payment-element");
+        try {
+            await paymentElement.mount("#payment-element");
+            console.log('Payment element mounted successfully');
+        } catch (mountError) {
+            console.error('Error mounting payment element:', mountError);
+            throw new Error(`Failed to mount payment element: ${mountError.message}`);
+        }
         
         // Hide loading state
         hideLoadingState();
@@ -75,29 +105,44 @@ async function handleSubmit(e) {
     setLoading(true);
 
     try {
-        const { error } = await stripe.confirmPayment({
+        console.log('Starting payment confirmation...');
+        console.log('Elements:', elements);
+        console.log('Payment element:', paymentElement);
+        
+        const result = await stripe.confirmPayment({
             elements,
             confirmParams: {
                 return_url: `${window.location.origin}/payment.html`,
             },
         });
+        
+        console.log('Payment confirmation result:', result);
 
         // This point will only be reached if there is an immediate error when
         // confirming the payment. Otherwise, your customer will be redirected to
         // your `return_url`. For some payment methods like iDEAL, your customer will
         // be redirected to an intermediate site first to authorize the payment, then
         // redirected to the `return_url`.
-        if (error) {
-            console.error('Payment confirmation error:', error);
-            if (error.type === "card_error" || error.type === "validation_error") {
-                showMessage(error.message);
+        if (result.error) {
+            console.error('Payment confirmation error:', result.error);
+            console.error('Error type:', result.error.type);
+            console.error('Error code:', result.error.code);
+            console.error('Error message:', result.error.message);
+            
+            if (result.error.type === "card_error" || result.error.type === "validation_error") {
+                showMessage(result.error.message);
             } else {
-                showMessage("An unexpected error occurred. Please try again.");
+                showMessage(`Payment error: ${result.error.message || 'An unexpected error occurred. Please try again.'}`);
             }
+        } else {
+            console.log('Payment confirmation successful, should redirect...');
         }
     } catch (err) {
         console.error('Unexpected error during payment confirmation:', err);
-        showMessage("An unexpected error occurred. Please try again.");
+        console.error('Error name:', err.name);
+        console.error('Error message:', err.message);
+        console.error('Error stack:', err.stack);
+        showMessage(`Unexpected error: ${err.message || 'Please try again.'}`);
     }
 
     setLoading(false);
