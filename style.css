@@ -9,6 +9,11 @@
 
 body {
     background-color: #0a0a0a;
+    background-image: url('8fe73332ca64ee9fe904fbf029c3a377.jpg');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     color: #FFFFFF;
     font-family: 'Jura', sans-serif;
     height: 100vh;
@@ -21,6 +26,7 @@ body.scrollable {
     height: auto;
     overflow-y: auto;
     overflow-x: hidden;
+    background-attachment: fixed;
 }
 
 /* Product Name Corner */
@@ -116,6 +122,19 @@ body.scrollable {
     z-index: 2;
 }
 
+/* Add subtle overlay for content readability over fixed background */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(10, 10, 10, 0.4);
+    z-index: 1;
+    pointer-events: none;
+}
+
 /* Main Title */
 .main-title {
     font-size: clamp(4rem, 15vw, 8rem);
@@ -167,12 +186,16 @@ body.scrollable {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding: 4rem 0;
     margin-top: 2rem;
+    position: relative;
+    z-index: 2;
 }
 
 .section-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 2rem;
+    position: relative;
+    z-index: 2;
 }
 
 .section-title {
