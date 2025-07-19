@@ -302,8 +302,8 @@ body::before {
 
 .vault-mapping {
     display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 3rem;
+    grid-template-columns: 1fr 1.8fr;
+    gap: 2.5rem;
     align-items: center;
     padding: 4rem 0;
     margin-bottom: 8rem;
@@ -323,13 +323,14 @@ body::before {
 
 .mapping-description {
     padding: 1rem 0;
+    max-width: 450px;
 }
 
 .mapping-description h3 {
     font-family: 'Orbitron', sans-serif;
-    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-size: clamp(1.3rem, 3.5vw, 1.8rem);
     font-weight: 600;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.2rem;
     color: #ffdd00;
     letter-spacing: 0.1em;
     text-shadow: 0 0 15px rgba(255, 221, 0, 0.3);
@@ -337,11 +338,11 @@ body::before {
 
 .mapping-description p {
     font-family: 'Jura', sans-serif;
-    font-size: 1.1rem;
-    line-height: 1.7;
+    font-size: 1rem;
+    line-height: 1.6;
     color: rgba(255, 255, 255, 0.9);
     letter-spacing: 0.02em;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 }
 
 .mapping-features {
@@ -364,13 +365,13 @@ body::before {
     position: relative;
     overflow: hidden;
     border-radius: 16px;
-    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.9), 0 0 40px rgba(255, 221, 0, 0.3);
-    transform: scale(0.85) translateX(-50px);
+    box-shadow: 0 35px 70px rgba(0, 0, 0, 0.8), 0 0 35px rgba(255, 221, 0, 0.3);
+    transform: scale(0.9) translateX(-30px);
     transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .mapping-video.scrolled {
-    transform: scale(1.15) translateX(0);
+    transform: scale(1.08) translateX(0);
 }
 
 .mapping-video video {
@@ -390,7 +391,7 @@ body::before {
 @media (max-width: 768px) {
     .vault-mapping {
         grid-template-columns: 1fr;
-        gap: 3rem;
+        gap: 2.5rem;
         margin-bottom: 6rem;
         padding: 3rem 0;
     }
@@ -403,19 +404,19 @@ body::before {
     }
     
     .mapping-description h3 {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
         margin-bottom: 1rem;
     }
     
     .mapping-description p {
-        font-size: 1rem;
-        line-height: 1.6;
-        margin-bottom: 1.5rem;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 1.2rem;
         text-align: left;
     }
     
     .mapping-video {
-        transform: scale(0.9);
+        transform: scale(0.95);
         order: -1;
     }
     
