@@ -34,6 +34,8 @@ async function handlePaymentSubmit(event) {
         const shippingInfo = sessionStorage.getItem('shippingInfo');
         const shippingMethod = shippingInfo ? JSON.parse(shippingInfo).shipping : 'standard';
         
+        console.log('Creating checkout session with shipping method:', shippingMethod);
+        
         // Create checkout session
         const response = await fetch('/api/create-checkout-session', {
             method: 'POST',
@@ -43,11 +45,17 @@ async function handlePaymentSubmit(event) {
             body: JSON.stringify({ shippingMethod }),
         });
         
+        console.log('Response status:', response.status);
+        
         if (!response.ok) {
-            throw new Error('Failed to create checkout session');
+            const errorData = await response.json();
+            console.error('Server error:', errorData);
+            throw new Error(`Server error: ${errorData.error?.message || response.status}`);
         }
         
-        const { sessionId } = await response.json();
+        const data = await response.json();
+        console.log('Checkout session created:', data);
+        const { sessionId } = data;
         
         // Redirect to Stripe Checkout
         const { error } = await stripe.redirectToCheckout({

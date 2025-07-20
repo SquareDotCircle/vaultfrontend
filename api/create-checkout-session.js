@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     const shippingCost = shippingMethod === 'express' ? 1500 : 0; // $15.00 in cents
     const totalAmount = baseAmount + shippingCost;
 
-    // Create Checkout Session
+    // Create simple Checkout Session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -22,58 +22,14 @@ export default async function handler(req, res) {
               name: 'Go Offline - Offline Knowledge Device',
               description: '256GB storage with all of humanity\'s knowledge offline',
             },
-            unit_amount: baseAmount,
+            unit_amount: totalAmount, // Include shipping in the total price
           },
           quantity: 1,
         },
       ],
       mode: 'payment',
-      success_url: `${req.headers.origin}/payment.html?success=true`,
-      cancel_url: `${req.headers.origin}/payment.html?canceled=true`,
-      automatic_tax: { enabled: false },
-      shipping_options: shippingMethod === 'express' ? [
-        {
-          shipping_rate_data: {
-            type: 'fixed_amount',
-            fixed_amount: {
-              amount: shippingCost,
-              currency: 'usd',
-            },
-            display_name: 'Express Shipping',
-            delivery_estimate: {
-              minimum: {
-                unit: 'business_day',
-                value: 1,
-              },
-              maximum: {
-                unit: 'business_day',
-                value: 3,
-              },
-            },
-          },
-        },
-      ] : [
-        {
-          shipping_rate_data: {
-            type: 'fixed_amount',
-            fixed_amount: {
-              amount: 0,
-              currency: 'usd',
-            },
-            display_name: 'Standard Shipping',
-            delivery_estimate: {
-              minimum: {
-                unit: 'business_day',
-                value: 5,
-              },
-              maximum: {
-                unit: 'business_day',
-                value: 7,
-              },
-            },
-          },
-        },
-      ],
+      success_url: `${req.headers.origin || 'https://your-domain.vercel.app'}/payment.html?success=true`,
+      cancel_url: `${req.headers.origin || 'https://your-domain.vercel.app'}/payment.html?canceled=true`,
     });
 
     res.status(200).json({
@@ -82,7 +38,7 @@ export default async function handler(req, res) {
     });
   } catch (error) {
     console.error('Error creating checkout session:', error);
-    res.status(400).json({
+    res.status(500).json({
       error: {
         message: error.message,
       },
