@@ -1078,6 +1078,8 @@ body.payment-page {
     height: auto;
     overflow-y: auto;
     overflow-x: hidden;
+    background: #0a0a0a !important;
+    background-image: none !important;
 }
 
 .payment-container {
@@ -1640,9 +1642,6 @@ body.payment-page {
 /* Progress Hero Section */
 .progress-hero {
     background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
-    background-image: 
-        radial-gradient(circle at 20% 80%, rgba(255, 221, 0, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(0, 217, 36, 0.1) 0%, transparent 50%);
     min-height: 100vh;
     display: flex;
     align-items: center;
