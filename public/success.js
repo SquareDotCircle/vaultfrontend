@@ -50,26 +50,39 @@ function setOrderTime() {
 
 function loadShippingInfo() {
     const shippingInfo = sessionStorage.getItem('shippingInfo');
+    
+    // Update shipping method
+    const shippingMethodElement = document.getElementById('shipping-method');
+    const deliveryEstimateElement = document.getElementById('delivery-estimate');
+    
     if (shippingInfo) {
         const info = JSON.parse(shippingInfo);
         
-        // Update shipping method
-        const shippingMethodElement = document.getElementById('shipping-method');
         if (shippingMethodElement) {
             const method = info.shipping === 'express' ? 'Express Shipping' : 'Standard Shipping';
             shippingMethodElement.textContent = method;
         }
         
-        // Update delivery estimate
+        const isExpress = info.shipping === 'express';
+        const businessDays = isExpress ? 2 : 5;
+        const deliveryDate = getBusinessDaysFromNow(businessDays);
+        
+        if (deliveryEstimateElement) {
+            deliveryEstimateElement.textContent = deliveryDate;
+        }
+        
+        // Update delivery estimate in order details
         const deliveryDateElement = document.getElementById('delivery-date');
         if (deliveryDateElement) {
-            const isExpress = info.shipping === 'express';
-            const businessDays = isExpress ? 2 : 5;
-            const deliveryDate = getBusinessDaysFromNow(businessDays);
-            
             deliveryDateElement.textContent = isExpress ? 
                 `${deliveryDate} (1-2 business days)` : 
                 `${deliveryDate} (3-5 business days)`;
+        }
+    } else {
+        // Default values
+        if (deliveryEstimateElement) {
+            const deliveryDate = getBusinessDaysFromNow(5);
+            deliveryEstimateElement.textContent = deliveryDate;
         }
     }
 }
@@ -96,27 +109,23 @@ function getBusinessDaysFromNow(businessDays) {
 }
 
 function startTrackingAnimation() {
-    // Simulate progression through tracking steps
+    // Animate the shipping status text
     setTimeout(() => {
-        // After 3 seconds, start the "configuring" animation
-        const activeStep = document.querySelector('.tracking-step.active');
-        if (activeStep) {
-            const icon = activeStep.querySelector('.step-icon');
-            const content = activeStep.querySelector('.step-content p');
-            
+        const shippingStatus = document.getElementById('shipping-status');
+        if (shippingStatus) {
             let dots = 0;
-            const baseText = 'Your device is being configured and packaged';
+            const baseText = 'Preparing for shipment';
             
             const interval = setInterval(() => {
                 dots = (dots + 1) % 4;
                 const dotString = '.'.repeat(dots);
-                content.textContent = baseText + dotString;
-            }, 500);
+                shippingStatus.textContent = baseText + dotString;
+            }, 600);
             
             // Store interval for cleanup if needed
             window.trackingInterval = interval;
         }
-    }, 3000);
+    }, 2000);
 }
 
 // Utility function to show additional order actions

@@ -34,40 +34,42 @@
 
             <!-- Tracking Steps -->
             <div class="tracking-container">
-                <h3 style="color: #ffdd00; font-family: 'Orbitron', sans-serif; margin-bottom: 1.5rem; text-align: center;">
-                    Track Your Shipment
+                <h3 style="color: #ffdd00; font-family: 'Orbitron', sans-serif; margin-bottom: 2rem; text-align: center;">
+                    Order Progress
                 </h3>
                 
-                <div class="tracking-steps">
-                    <div class="tracking-step completed">
-                        <div class="step-icon">✓</div>
-                        <div class="step-content">
-                            <h4>Order Placed</h4>
+                <div class="progress-diagram">
+                    <div class="progress-step completed" data-step="1">
+                        <div class="step-circle">
+                            <div class="step-icon">📋</div>
+                        </div>
+                        <div class="step-label">
+                            <h4>Order Received</h4>
                             <p id="order-time">Today at 2:45 PM</p>
                         </div>
                     </div>
                     
-                    <div class="tracking-step active">
-                        <div class="step-icon">📦</div>
-                        <div class="step-content">
-                            <h4>Preparing for Shipment</h4>
-                            <p>Your device is being configured and packaged</p>
+                    <div class="progress-line active"></div>
+                    
+                    <div class="progress-step active" data-step="2">
+                        <div class="step-circle">
+                            <div class="step-icon">📦</div>
+                        </div>
+                        <div class="step-label">
+                            <h4>Device Shipped</h4>
+                            <p id="shipping-status">Preparing for shipment</p>
                         </div>
                     </div>
                     
-                    <div class="tracking-step">
-                        <div class="step-icon">🚚</div>
-                        <div class="step-content">
-                            <h4>Shipped</h4>
-                            <p>Your order is on its way</p>
-                        </div>
-                    </div>
+                    <div class="progress-line"></div>
                     
-                    <div class="tracking-step">
-                        <div class="step-icon">🏠</div>
-                        <div class="step-content">
+                    <div class="progress-step" data-step="3">
+                        <div class="step-circle">
+                            <div class="step-icon">🏠</div>
+                        </div>
+                        <div class="step-label">
                             <h4>Delivered</h4>
-                            <p>Package delivered to your address</p>
+                            <p id="delivery-estimate">Expected delivery</p>
                         </div>
                     </div>
                 </div>
