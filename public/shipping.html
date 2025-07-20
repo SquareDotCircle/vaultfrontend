@@ -20,6 +20,15 @@
                 </div>
             </div>
 
+            <div id="discount-summary" class="discount-summary">
+                <h4>🎉 Discount Applied!</h4>
+                <div class="price-breakdown">
+                    <div>Original Price: <span class="original-price">$299.00</span></div>
+                    <div>Discount: <span class="discount-amount" id="discount-amount">-$0.00</span></div>
+                    <div>Final Price: <span class="final-price" id="final-price">$299.00</span></div>
+                </div>
+            </div>
+
             <form id="shipping-form" class="shipping-form">
                 <div class="form-section">
                     <h3>Contact Information</h3>
@@ -27,6 +36,13 @@
                         <div class="form-group">
                             <label for="email">Email Address</label>
                             <input type="email" id="email" name="email" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="referralCode">Referral Code (Optional)</label>
+                            <input type="text" id="referralCode" name="referralCode" placeholder="Enter referral code">
+                            <div id="referral-message" class="referral-message"></div>
                         </div>
                     </div>
                 </div>

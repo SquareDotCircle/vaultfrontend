@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize address autocomplete
     initializeAddressAutocomplete();
     
+    // Initialize referral code system
+    initializeReferralCodes();
+    
     shippingForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -19,7 +22,9 @@ document.addEventListener('DOMContentLoaded', function() {
             zipCode: formData.get('zipCode'),
             country: formData.get('country'),
             phone: formData.get('phone'),
-            shipping: formData.get('shipping')
+            shipping: formData.get('shipping'),
+            referralCode: formData.get('referralCode'),
+            discount: getCurrentDiscount()
         };
         
         // Store shipping information in sessionStorage
@@ -232,4 +237,151 @@ function initializeAddressAutocomplete() {
         currentSuggestions = [];
         selectedIndex = -1;
     }
+}
+
+// Referral Code System
+function initializeReferralCodes() {
+    const referralInput = document.getElementById('referralCode');
+    const referralMessage = document.getElementById('referral-message');
+    const productPrice = document.querySelector('.product-price');
+    const discountSummary = document.getElementById('discount-summary');
+    
+    // Referral codes configuration
+    const referralCodes = {
+        'GOOFFLINE40': {
+            discount: 0.40, // 40% discount
+            description: '40% off your order!'
+        },
+        'SPECIAL35': {
+            discount: 264, // Fixed discount to bring price to $35
+            description: 'Special price: $35!'
+        }
+    };
+    
+    let currentDiscount = null;
+    
+    if (!referralInput) return;
+    
+    // Check referral code on input change
+    referralInput.addEventListener('input', function() {
+        const code = this.value.trim().toUpperCase();
+        
+        if (code === '') {
+            resetDiscount();
+            return;
+        }
+        
+        if (referralCodes[code]) {
+            applyDiscount(code, referralCodes[code]);
+        } else if (code.length >= 3) {
+            showReferralMessage('Invalid referral code', 'error');
+            resetDiscount();
+        }
+    });
+    
+    function applyDiscount(code, discountConfig) {
+        const basePrice = 299;
+        const shippingCost = getShippingCost();
+        let discountAmount, finalPrice;
+        
+        if (typeof discountConfig.discount === 'number' && discountConfig.discount < 1) {
+            // Percentage discount
+            discountAmount = basePrice * discountConfig.discount;
+            finalPrice = basePrice - discountAmount + shippingCost;
+        } else {
+            // Fixed amount discount
+            discountAmount = discountConfig.discount;
+            finalPrice = basePrice - discountAmount + shippingCost;
+        }
+        
+        currentDiscount = {
+            code: code,
+            amount: discountAmount,
+            finalPrice: finalPrice,
+            type: typeof discountConfig.discount === 'number' && discountConfig.discount < 1 ? 'percentage' : 'fixed'
+        };
+        
+        // Update UI
+        showReferralMessage(discountConfig.description, 'success');
+        updatePriceDisplay(finalPrice);
+        showDiscountSummary(basePrice, discountAmount, finalPrice, shippingCost);
+    }
+    
+    function resetDiscount() {
+        currentDiscount = null;
+        hideReferralMessage();
+        hideDiscountSummary();
+        updatePriceDisplay(299 + getShippingCost());
+    }
+    
+    function showReferralMessage(message, type) {
+        referralMessage.textContent = message;
+        referralMessage.className = `referral-message ${type}`;
+    }
+    
+    function hideReferralMessage() {
+        referralMessage.className = 'referral-message';
+    }
+    
+    function updatePriceDisplay(price) {
+        if (productPrice) {
+            productPrice.textContent = `$${Math.round(price)}`;
+        }
+    }
+    
+    function showDiscountSummary(originalPrice, discountAmount, finalPrice, shippingCost) {
+        if (discountSummary) {
+            document.getElementById('discount-amount').textContent = `-$${Math.round(discountAmount)}`;
+            document.getElementById('final-price').textContent = `$${Math.round(finalPrice)}`;
+            
+            // Show shipping cost if applicable
+            if (shippingCost > 0) {
+                const breakdown = document.querySelector('.price-breakdown');
+                if (!breakdown.querySelector('.shipping-cost')) {
+                    const shippingDiv = document.createElement('div');
+                    shippingDiv.className = 'shipping-cost';
+                    shippingDiv.innerHTML = `Shipping: <span style="color: #ccc;">+$${shippingCost}</span>`;
+                    breakdown.appendChild(shippingDiv);
+                }
+            }
+            
+            discountSummary.classList.add('active');
+        }
+    }
+    
+    function hideDiscountSummary() {
+        if (discountSummary) {
+            discountSummary.classList.remove('active');
+            // Remove shipping cost display
+            const shippingCost = discountSummary.querySelector('.shipping-cost');
+            if (shippingCost) {
+                shippingCost.remove();
+            }
+        }
+    }
+    
+    function getShippingCost() {
+        const expressShipping = document.querySelector('input[name="shipping"][value="express"]');
+        return (expressShipping && expressShipping.checked) ? 15 : 0;
+    }
+    
+    // Update discount when shipping changes
+    const shippingOptions = document.querySelectorAll('input[name="shipping"]');
+    shippingOptions.forEach(option => {
+        option.addEventListener('change', function() {
+            if (currentDiscount) {
+                // Reapply discount with new shipping cost
+                const basePrice = 299;
+                const shippingCost = getShippingCost();
+                const finalPrice = currentDiscount.finalPrice - (currentDiscount.finalPrice - basePrice + currentDiscount.amount) + shippingCost;
+                updatePriceDisplay(finalPrice);
+                showDiscountSummary(basePrice, currentDiscount.amount, finalPrice, shippingCost);
+            }
+        });
+    });
+    
+    // Make current discount available globally
+    window.getCurrentDiscount = function() {
+        return currentDiscount;
+    };
 }

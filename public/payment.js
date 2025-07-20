@@ -16,16 +16,26 @@ function setupPaymentButton() {
         paymentForm.action = '/api/create-checkout-session';
         paymentForm.method = 'POST';
         
-        // Add shipping method as hidden input
+        // Add shipping method and discount as hidden inputs
         const shippingInfo = sessionStorage.getItem('shippingInfo');
-        const shippingMethod = shippingInfo ? JSON.parse(shippingInfo).shipping : 'standard';
+        const info = shippingInfo ? JSON.parse(shippingInfo) : {};
+        const shippingMethod = info.shipping || 'standard';
         
         // Create hidden input for shipping method
-        const hiddenInput = document.createElement('input');
-        hiddenInput.type = 'hidden';
-        hiddenInput.name = 'shippingMethod';
-        hiddenInput.value = shippingMethod;
-        paymentForm.appendChild(hiddenInput);
+        const hiddenShippingInput = document.createElement('input');
+        hiddenShippingInput.type = 'hidden';
+        hiddenShippingInput.name = 'shippingMethod';
+        hiddenShippingInput.value = shippingMethod;
+        paymentForm.appendChild(hiddenShippingInput);
+        
+        // Create hidden input for discount if present
+        if (info.discount) {
+            const hiddenDiscountInput = document.createElement('input');
+            hiddenDiscountInput.type = 'hidden';
+            hiddenDiscountInput.name = 'discount';
+            hiddenDiscountInput.value = JSON.stringify(info.discount);
+            paymentForm.appendChild(hiddenDiscountInput);
+        }
         
         paymentButton.disabled = false;
         paymentButton.textContent = paymentButton.textContent.replace('Loading...', 'Pay');
@@ -92,15 +102,26 @@ function displayShippingInfo() {
         const shippingCost = info.shipping === 'express' ? 15 : 0;
         const totalPrice = basePrice + shippingCost;
         
+        // Calculate final price with discount
+        let finalPrice = totalPrice;
+        if (info.discount) {
+            finalPrice = Math.round(299 - info.discount.amount + shippingCost);
+        }
+        
         // Update displayed prices
         const priceElement = document.querySelector('.product-price');
         if (priceElement) {
-            priceElement.textContent = `$${totalPrice}`;
+            priceElement.textContent = `$${finalPrice}`;
         }
         
         const paymentButton = document.querySelector('.payment-button');
         if (paymentButton) {
-            paymentButton.textContent = `Pay $${totalPrice}`;
+            paymentButton.textContent = `Pay $${finalPrice}`;
+        }
+        
+        // Show discount info if applied
+        if (info.discount) {
+            showDiscountInfo(info.discount, 299, finalPrice);
         }
     }
 }
@@ -133,5 +154,35 @@ function showError(message) {
         messageContainer.style.backgroundColor = '#fef2f2';
         messageContainer.style.border = '1px solid #fecaca';
         messageContainer.style.borderRadius = '6px';
+    }
+}
+
+// Show discount information on payment page
+function showDiscountInfo(discount, originalPrice, finalPrice) {
+    const productInfo = document.querySelector('.product-info');
+    if (productInfo && !document.querySelector('.discount-info')) {
+        const discountInfo = document.createElement('div');
+        discountInfo.className = 'discount-info';
+        discountInfo.style.cssText = `
+            background: rgba(0, 217, 36, 0.1);
+            border: 1px solid rgba(0, 217, 36, 0.3);
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 16px;
+            color: #00d924;
+            text-align: center;
+            font-family: 'Exo', sans-serif;
+            font-size: 0.9rem;
+        `;
+        
+        discountInfo.innerHTML = `
+            <div style="font-weight: 600; margin-bottom: 4px;">🎉 ${discount.code} Applied!</div>
+            <div style="color: #ccc; font-size: 0.8rem;">
+                Original: <span style="text-decoration: line-through;">$${originalPrice}</span> → 
+                You pay: <span style="color: #00d924; font-weight: 600;">$${finalPrice}</span>
+            </div>
+        `;
+        
+        productInfo.parentNode.insertBefore(discountInfo, productInfo.nextSibling);
     }
 } 
