@@ -1492,6 +1492,7 @@ body.payment-page {
 
 .form-group {
     flex: 1;
+    position: relative;
 }
 
 .form-group label {
@@ -1526,6 +1527,48 @@ body.payment-page {
 
 .form-group input::placeholder {
     color: #666;
+}
+
+/* Address Autocomplete Styles */
+.address-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(15, 15, 15, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0 0 8px 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+    backdrop-filter: blur(10px);
+}
+
+.address-suggestion {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    color: #fff;
+    font-family: 'Jura', sans-serif;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background-color 0.2s ease;
+}
+
+.address-suggestion:hover,
+.address-suggestion.selected {
+    background-color: rgba(255, 221, 0, 0.1);
+    color: #ffdd00;
+}
+
+.address-suggestion:last-child {
+    border-bottom: none;
+}
+
+.address-loading {
+    padding: 1rem;
+    text-align: center;
+    color: #999;
+    font-style: italic;
 }
 
 .shipping-options {

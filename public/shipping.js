@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     const shippingForm = document.getElementById('shipping-form');
     
+    // Initialize address autocomplete
+    initializeAddressAutocomplete();
+    
     shippingForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -38,4 +41,195 @@ document.addEventListener('DOMContentLoaded', function() {
             productPrice.textContent = `$${totalPrice}`;
         });
     });
-}); 
+});
+
+// Address Autocomplete Functionality
+function initializeAddressAutocomplete() {
+    const addressInput = document.getElementById('address');
+    const suggestionsContainer = document.getElementById('address-suggestions');
+    let currentSuggestions = [];
+    let selectedIndex = -1;
+    let searchTimeout;
+
+    if (!addressInput || !suggestionsContainer) return;
+
+    // Handle input changes
+    addressInput.addEventListener('input', function() {
+        const query = this.value.trim();
+        
+        if (query.length < 3) {
+            hideSuggestions();
+            return;
+        }
+
+        // Debounce the search
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            searchAddresses(query);
+        }, 300);
+    });
+
+    // Handle keyboard navigation
+    addressInput.addEventListener('keydown', function(e) {
+        if (!suggestionsContainer.style.display || suggestionsContainer.style.display === 'none') return;
+
+        switch(e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                selectedIndex = Math.min(selectedIndex + 1, currentSuggestions.length - 1);
+                updateSelection();
+                break;
+            case 'ArrowUp':
+                e.preventDefault();
+                selectedIndex = Math.max(selectedIndex - 1, -1);
+                updateSelection();
+                break;
+            case 'Enter':
+                e.preventDefault();
+                if (selectedIndex >= 0) {
+                    selectAddress(currentSuggestions[selectedIndex]);
+                }
+                break;
+            case 'Escape':
+                hideSuggestions();
+                break;
+        }
+    });
+
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!addressInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+            hideSuggestions();
+        }
+    });
+
+    async function searchAddresses(query) {
+        try {
+            showLoading();
+            
+            // Use Nominatim API (free OpenStreetMap geocoding service)
+            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=${encodeURIComponent(query)}`);
+            
+            if (!response.ok) {
+                throw new Error('Geocoding service unavailable');
+            }
+            
+            const results = await response.json();
+            currentSuggestions = results;
+            displaySuggestions(results);
+            
+        } catch (error) {
+            console.error('Address search error:', error);
+            showError('Address search temporarily unavailable');
+        }
+    }
+
+    function displaySuggestions(results) {
+        if (results.length === 0) {
+            showError('No addresses found');
+            return;
+        }
+
+        const suggestions = results.map((result, index) => {
+            const address = formatAddress(result);
+            return `<div class="address-suggestion" data-index="${index}">${address}</div>`;
+        }).join('');
+
+        suggestionsContainer.innerHTML = suggestions;
+        suggestionsContainer.style.display = 'block';
+        selectedIndex = -1;
+
+        // Add click handlers
+        suggestionsContainer.querySelectorAll('.address-suggestion').forEach((suggestion, index) => {
+            suggestion.addEventListener('click', () => {
+                selectAddress(results[index]);
+            });
+        });
+    }
+
+    function formatAddress(result) {
+        const parts = [];
+        
+        if (result.display_name) {
+            // Use the display name but make it cleaner
+            const displayName = result.display_name;
+            return displayName;
+        }
+        
+        return 'Unknown address';
+    }
+
+    function selectAddress(result) {
+        const address = result.address || {};
+        
+        // Fill in the address fields
+        addressInput.value = getStreetAddress(result);
+        
+        // Auto-fill other fields if available
+        if (address.city || address.town || address.village) {
+            document.getElementById('city').value = address.city || address.town || address.village;
+        }
+        
+        if (address.state || address.region) {
+            document.getElementById('state').value = address.state || address.region;
+        }
+        
+        if (address.postcode) {
+            document.getElementById('zipCode').value = address.postcode;
+        }
+        
+        if (address.country_code) {
+            const countrySelect = document.getElementById('country');
+            const countryCode = address.country_code.toUpperCase();
+            
+            // Try to match country code with select options
+            const option = Array.from(countrySelect.options).find(opt => opt.value === countryCode);
+            if (option) {
+                countrySelect.value = countryCode;
+            }
+        }
+
+        hideSuggestions();
+        
+        // Focus on next empty field
+        const nextField = document.getElementById('city');
+        if (nextField && !nextField.value) {
+            nextField.focus();
+        }
+    }
+
+    function getStreetAddress(result) {
+        const address = result.address || {};
+        const parts = [];
+        
+        if (address.house_number) parts.push(address.house_number);
+        if (address.road) parts.push(address.road);
+        
+        return parts.join(' ') || result.display_name?.split(',')[0] || '';
+    }
+
+    function updateSelection() {
+        const suggestions = suggestionsContainer.querySelectorAll('.address-suggestion');
+        suggestions.forEach((suggestion, index) => {
+            suggestion.classList.toggle('selected', index === selectedIndex);
+        });
+    }
+
+    function showLoading() {
+        suggestionsContainer.innerHTML = '<div class="address-loading">Searching addresses...</div>';
+        suggestionsContainer.style.display = 'block';
+    }
+
+    function showError(message) {
+        suggestionsContainer.innerHTML = `<div class="address-loading">${message}</div>`;
+        suggestionsContainer.style.display = 'block';
+        setTimeout(hideSuggestions, 3000);
+    }
+
+    function hideSuggestions() {
+        suggestionsContainer.style.display = 'none';
+        suggestionsContainer.innerHTML = '';
+        currentSuggestions = [];
+        selectedIndex = -1;
+    }
+}
