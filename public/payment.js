@@ -1,6 +1,3 @@
-// Initialize Stripe
-const stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
-
 // Initialize everything when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
     displayShippingInfo();
@@ -9,71 +6,30 @@ document.addEventListener('DOMContentLoaded', function() {
     handlePaymentResult();
 });
 
-// Set up the payment button to redirect to Stripe Checkout
+// Set up the payment button 
 function setupPaymentButton() {
     const paymentForm = document.getElementById('payment-form');
     const paymentButton = document.querySelector('.payment-button');
     
     if (paymentForm && paymentButton) {
-        paymentForm.addEventListener('submit', handlePaymentSubmit);
-        paymentButton.disabled = false;
-        paymentButton.textContent = paymentButton.textContent.replace('Loading...', 'Pay');
-    }
-}
-
-// Handle payment form submission
-async function handlePaymentSubmit(event) {
-    event.preventDefault();
-    
-    const paymentButton = document.querySelector('.payment-button');
-    paymentButton.disabled = true;
-    paymentButton.textContent = 'Creating checkout...';
-    
-    try {
-        // Get shipping method for pricing
+        // Set up form to POST to our checkout endpoint
+        paymentForm.action = '/api/create-checkout-session';
+        paymentForm.method = 'POST';
+        
+        // Add shipping method as hidden input
         const shippingInfo = sessionStorage.getItem('shippingInfo');
         const shippingMethod = shippingInfo ? JSON.parse(shippingInfo).shipping : 'standard';
         
-        console.log('Creating checkout session with shipping method:', shippingMethod);
+        // Create hidden input for shipping method
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'shippingMethod';
+        hiddenInput.value = shippingMethod;
+        paymentForm.appendChild(hiddenInput);
         
-        // Create checkout session
-        const response = await fetch('/api/create-checkout-session', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ shippingMethod }),
-        });
-        
-        console.log('Response status:', response.status);
-        
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.error('Server error:', errorData);
-            throw new Error(`Server error: ${errorData.error?.message || response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('Checkout session created:', data);
-        const { sessionId } = data;
-        
-        // Redirect to Stripe Checkout
-        const { error } = await stripe.redirectToCheckout({
-            sessionId: sessionId,
-        });
-        
-        if (error) {
-            console.error('Error redirecting to checkout:', error);
-            showError(error.message);
-            paymentButton.disabled = false;
-            paymentButton.textContent = 'Pay Now';
-        }
-        
-    } catch (error) {
-        console.error('Error:', error);
-        showError('Unable to start checkout. Please try again.');
         paymentButton.disabled = false;
-        paymentButton.textContent = 'Pay Now';
+        paymentButton.textContent = paymentButton.textContent.replace('Loading...', 'Pay');
+        paymentButton.type = 'submit';
     }
 }
 
