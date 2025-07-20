@@ -1074,6 +1074,12 @@ body::before {
 }
 
 /* Payment Page Styles */
+body.payment-page {
+    height: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
 .payment-container {
     display: flex;
     flex-direction: column;
