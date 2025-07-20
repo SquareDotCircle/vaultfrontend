@@ -1078,28 +1078,27 @@ body.payment-page {
     height: auto;
     overflow-y: auto;
     overflow-x: hidden;
-    background: #0a0a0a !important;
+    background: #ffffff !important;
     background-image: none !important;
 }
 
 .payment-container {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    min-height: 100vh;
-    padding: 2rem;
-    background-color: #0a0a0a;
+    padding: 4rem 2rem;
+    background-color: #ffffff;
 }
 
 .payment-box {
-    background: rgba(15, 15, 15, 0.7);
-    padding: 2.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(15px);
+    background: #ffffff;
+    padding: 3rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
     width: 100%;
-    max-width: 500px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    max-width: 800px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .payment-title {
@@ -1641,87 +1640,94 @@ body.payment-page {
 
 /* Progress Hero Section */
 .progress-hero {
-    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+    background: linear-gradient(180deg, #fafafa 0%, #f0f0f0 100%);
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
+    padding: 3rem 2rem;
     position: relative;
     width: 100vw;
     margin-left: calc(-50vw + 50%);
 }
 
 .progress-hero-content {
-    max-width: 1200px;
+    max-width: 1000px;
     width: 100%;
     text-align: center;
 }
 
 .success-header {
-    margin-bottom: 3rem;
+    margin-bottom: 4rem;
 }
 
 .success-checkmark {
-    font-size: 5rem;
-    color: #00d924;
-    margin-bottom: 1rem;
-    text-shadow: 0 0 30px rgba(0, 217, 36, 0.5);
-    animation: checkmark-pulse 2s ease-in-out infinite alternate;
+    font-size: 4rem;
+    color: #2563eb;
+    margin-bottom: 1.5rem;
+    animation: subtle-pulse 3s ease-in-out infinite;
 }
 
-@keyframes checkmark-pulse {
-    0% { transform: scale(1); }
-    100% { transform: scale(1.1); }
+@keyframes subtle-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
 }
 
 .success-title {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 3.5rem;
-    color: #fff;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 3rem;
+    font-weight: 600;
+    color: #111827;
     margin: 0 0 1rem 0;
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    letter-spacing: -0.025em;
 }
 
 .success-subtitle {
-    font-size: 1.2rem;
-    color: #ccc;
+    font-size: 1.125rem;
+    color: #6b7280;
     margin: 0;
-    font-weight: 300;
+    font-weight: 400;
+    line-height: 1.6;
 }
 
 .order-number-hero {
-    background: rgba(255, 221, 0, 0.1);
-    border: 2px solid rgba(255, 221, 0, 0.3);
-    border-radius: 15px;
-    padding: 1.5rem 2rem;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem 2.5rem;
     margin: 3rem auto;
     display: inline-block;
-    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .order-label {
-    color: #ffdd00;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.1rem;
-    margin-right: 1rem;
+    color: #6b7280;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-right: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .order-id-display {
-    color: #fff;
-    font-family: 'Jura', monospace;
-    font-size: 1.4rem;
-    font-weight: 700;
-    letter-spacing: 0.15em;
+    color: #111827;
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
 }
 
 .progress-diagram-hero {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     margin-top: 4rem;
-    gap: 2rem;
-    flex-wrap: wrap;
+    gap: 0;
+    flex-wrap: nowrap;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* Order Tracking Styles */
@@ -1743,177 +1749,149 @@ body.payment-page {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    flex: 0 0 auto;
+    flex: 1;
     position: relative;
-    min-width: 200px;
+    padding: 0 1rem;
 }
 
 .progress-diagram-hero .progress-step {
-    min-width: 250px;
+    flex: 1;
 }
 
 .step-circle {
-    width: 90px;
-    height: 90px;
+    width: 64px;
+    height: 64px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    border: 4px solid rgba(255, 255, 255, 0.2);
+    background: #f3f4f6;
+    border: 2px solid #e5e7eb;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 1.5rem;
-    transition: all 0.4s ease;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
     position: relative;
     z-index: 2;
 }
 
 .progress-diagram-hero .step-circle {
-    width: 110px;
-    height: 110px;
-    border-width: 5px;
+    width: 72px;
+    height: 72px;
 }
 
 .progress-step.completed .step-circle {
-    background: rgba(0, 217, 36, 0.2);
-    border-color: #00d924;
-    box-shadow: 0 0 20px rgba(0, 217, 36, 0.3);
+    background: #10b981;
+    border-color: #10b981;
+    color: white;
 }
 
 .progress-step.active .step-circle {
-    background: rgba(255, 221, 0, 0.2);
-    border-color: #ffdd00;
-    box-shadow: 0 0 20px rgba(255, 221, 0, 0.3);
-    animation: pulse-glow 2s infinite;
+    background: #2563eb;
+    border-color: #2563eb;
+    color: white;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
 
-@keyframes pulse-glow {
-    0%, 100% { 
-        transform: scale(1);
-        box-shadow: 0 0 20px rgba(255, 221, 0, 0.3);
-    }
-    50% { 
-        transform: scale(1.05);
-        box-shadow: 0 0 30px rgba(255, 221, 0, 0.5);
-    }
+.progress-step .step-circle {
+    background: #f3f4f6;
+    border-color: #e5e7eb;
+    color: #9ca3af;
 }
 
 .step-icon {
-    font-size: 2.2rem;
-    filter: grayscale(1);
-    transition: filter 0.3s ease;
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
 }
 
 .progress-diagram-hero .step-icon {
-    font-size: 2.8rem;
-}
-
-.progress-step.completed .step-icon,
-.progress-step.active .step-icon {
-    filter: grayscale(0);
+    font-size: 1.75rem;
 }
 
 .step-label h4 {
-    color: #fff;
-    margin: 0 0 0.5rem 0;
-    font-family: 'Exo', sans-serif;
+    color: #111827;
+    margin: 0 0 0.25rem 0;
+    font-family: 'Inter', sans-serif;
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: 0.875rem;
 }
 
 .progress-diagram-hero .step-label h4 {
-    font-size: 1.3rem;
-    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .step-label p {
-    color: #ccc;
+    color: #6b7280;
     margin: 0;
-    font-size: 0.9rem;
-    line-height: 1.3;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    font-weight: 400;
 }
 
 .progress-diagram-hero .step-label p {
-    font-size: 1rem;
+    font-size: 0.875rem;
 }
 
 .progress-step.completed .step-label h4 {
-    color: #00d924;
+    color: #10b981;
 }
 
 .progress-step.active .step-label h4 {
-    color: #ffdd00;
+    color: #2563eb;
 }
 
 .progress-line {
     flex: 1;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.1);
+    height: 2px;
+    background: #e5e7eb;
     position: relative;
-    margin: 0 1rem;
-    border-radius: 2px;
-    min-width: 80px;
-    margin-top: -55px;
+    margin: 0 -1rem;
+    border-radius: 1px;
+    margin-top: -36px;
     z-index: 1;
 }
 
 .progress-diagram-hero .progress-line {
-    height: 6px;
-    min-width: 120px;
-    margin-top: -70px;
-    border-radius: 3px;
+    height: 2px;
+    margin-top: -38px;
 }
 
 .progress-line.active {
     background: linear-gradient(
         90deg,
-        #00d924 0%,
-        #ffdd00 50%,
-        rgba(255, 255, 255, 0.1) 100%
+        #10b981 0%,
+        #10b981 50%,
+        #e5e7eb 50%,
+        #e5e7eb 100%
     );
-    animation: progress-flow 3s ease-in-out infinite;
 }
 
-@keyframes progress-flow {
-    0% {
-        background: linear-gradient(
-            90deg,
-            #00d924 0%,
-            #00d924 50%,
-            rgba(255, 255, 255, 0.1) 100%
-        );
-    }
-    50% {
-        background: linear-gradient(
-            90deg,
-            #00d924 0%,
-            #ffdd00 50%,
-            rgba(255, 255, 255, 0.1) 100%
-        );
-    }
-    100% {
-        background: linear-gradient(
-            90deg,
-            #00d924 0%,
-            #ffdd00 50%,
-            rgba(255, 255, 255, 0.1) 100%
-        );
-    }
+.progress-line:last-of-type {
+    background: #e5e7eb;
 }
 
 .order-details {
-    background: rgba(255, 255, 255, 0.05);
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
     border-radius: 8px;
-    padding: 1.5rem;
+    padding: 2rem;
     margin-bottom: 2rem;
+}
+
+.order-details h4 {
+    color: #111827 !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 1.125rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 1.5rem !important;
 }
 
 .detail-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    color: #ccc;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e5e7eb;
+    color: #6b7280;
 }
 
 .detail-row:last-child {
@@ -1921,45 +1899,58 @@ body.payment-page {
 }
 
 .detail-row span:first-child {
-    font-weight: 600;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
 }
 
 .detail-row span:last-child {
-    color: #fff;
+    color: #111827;
+    font-weight: 600;
 }
 
 .next-steps {
-    background: rgba(255, 255, 255, 0.05);
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
     border-radius: 8px;
-    padding: 1.5rem;
+    padding: 2rem;
     margin-bottom: 2rem;
+}
+
+.next-steps h4 {
+    color: #111827 !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 1.125rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 1.5rem !important;
 }
 
 .steps-list {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 1rem;
 }
 
 .step-item {
     display: flex;
     align-items: center;
-    color: #ccc;
-    font-size: 0.9rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.5;
 }
 
 .step-number {
-    width: 24px;
-    height: 24px;
-    background: rgba(255, 221, 0, 0.2);
-    color: #ffdd00;
+    width: 28px;
+    height: 28px;
+    background: #2563eb;
+    color: white;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 0.75rem;
+    margin-right: 1rem;
     font-weight: 600;
-    font-size: 0.8rem;
+    font-size: 0.875rem;
     flex-shrink: 0;
 }
 
@@ -1971,7 +1962,7 @@ body.payment-page {
     }
     
     .success-title {
-        font-size: 2.5rem;
+        font-size: 2rem;
     }
     
     .success-subtitle {
@@ -1979,7 +1970,7 @@ body.payment-page {
     }
     
     .success-checkmark {
-        font-size: 4rem;
+        font-size: 3rem;
     }
     
     .order-number-hero {
@@ -2013,10 +2004,10 @@ body.payment-page {
     
     .step-circle,
     .progress-diagram-hero .step-circle {
-        width: 80px;
-        height: 80px;
+        width: 56px;
+        height: 56px;
         margin-bottom: 1rem;
-        border-width: 4px;
+        border-width: 2px;
     }
     
     .step-icon,
@@ -2056,8 +2047,48 @@ body.payment-page {
     
     .order-details,
     .next-steps {
-        padding: 1rem;
+        padding: 1.5rem;
     }
+}
+
+/* Success Page Button Overrides */
+.payment-page .cta-button {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+    border: none;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.payment-page .cta-button.primary {
+    background: #2563eb;
+    color: white;
+}
+
+.payment-page .cta-button.primary:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.payment-page .cta-button.secondary {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+}
+
+.payment-page .cta-button.secondary:hover {
+    background: #e5e7eb;
+    transform: translateY(-1px);
+}
+
+.payment-page .cta-button.primary::before,
+.payment-page .cta-button.secondary::before {
+    display: none;
 }
 
 .shipping-options {
