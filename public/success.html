@@ -7,73 +7,60 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="payment-page">
+    <!-- Full Width Progress Hero Section -->
+    <div class="progress-hero">
+        <div class="progress-hero-content">
+            <div class="success-header">
+                <div class="success-checkmark">✓</div>
+                <h1 class="success-title">Order Confirmed!</h1>
+                <p class="success-subtitle">Your Go Offline device is being prepared for shipment</p>
+            </div>
+            
+            <div class="order-number-hero">
+                <span class="order-label">Order Number:</span>
+                <span id="order-id" class="order-id-display">#GO-2024-001</span>
+            </div>
+            
+            <div class="progress-diagram-hero">
+                <div class="progress-step completed" data-step="1">
+                    <div class="step-circle">
+                        <div class="step-icon">📋</div>
+                    </div>
+                    <div class="step-label">
+                        <h4>Order Received</h4>
+                        <p id="order-time">Today at 2:45 PM</p>
+                    </div>
+                </div>
+                
+                <div class="progress-line active"></div>
+                
+                <div class="progress-step active" data-step="2">
+                    <div class="step-circle">
+                        <div class="step-icon">📦</div>
+                    </div>
+                    <div class="step-label">
+                        <h4>Device Shipped</h4>
+                        <p id="shipping-status">Preparing for shipment</p>
+                    </div>
+                </div>
+                
+                <div class="progress-line"></div>
+                
+                <div class="progress-step" data-step="3">
+                    <div class="step-circle">
+                        <div class="step-icon">🏠</div>
+                    </div>
+                    <div class="step-label">
+                        <h4>Delivered</h4>
+                        <p id="delivery-estimate">Expected delivery</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="payment-container">
         <div class="payment-box">
-            <h2 class="payment-title">Order Confirmed!</h2>
-            
-            <!-- Order Header -->
-            <div class="order-header">
-                <div style="text-align: center; margin-bottom: 2rem;">
-                    <div style="font-size: 3rem; color: #00d924; margin-bottom: 1rem;">✓</div>
-                    <p style="color: #00d924; font-size: 1.25rem; margin-bottom: 0.5rem; font-weight: 600;">
-                        Thank you for your purchase!
-                    </p>
-                    <p style="color: #ccc; font-size: 0.9rem;">
-                        Your Go Offline device is being prepared for shipment
-                    </p>
-                </div>
-                
-                <!-- Order Number -->
-                <div class="order-number">
-                    <h3 style="color: #ffdd00; font-family: 'Orbitron', sans-serif; margin-bottom: 0.5rem;">Order Number</h3>
-                    <p id="order-id" style="color: #fff; font-family: 'Jura', monospace; font-size: 1.2rem; font-weight: 600; letter-spacing: 0.1em;">
-                        #GO-2024-001
-                    </p>
-                </div>
-            </div>
-
-            <!-- Tracking Steps -->
-            <div class="tracking-container">
-                <h3 style="color: #ffdd00; font-family: 'Orbitron', sans-serif; margin-bottom: 2rem; text-align: center;">
-                    Order Progress
-                </h3>
-                
-                <div class="progress-diagram">
-                    <div class="progress-step completed" data-step="1">
-                        <div class="step-circle">
-                            <div class="step-icon">📋</div>
-                        </div>
-                        <div class="step-label">
-                            <h4>Order Received</h4>
-                            <p id="order-time">Today at 2:45 PM</p>
-                        </div>
-                    </div>
-                    
-                    <div class="progress-line active"></div>
-                    
-                    <div class="progress-step active" data-step="2">
-                        <div class="step-circle">
-                            <div class="step-icon">📦</div>
-                        </div>
-                        <div class="step-label">
-                            <h4>Device Shipped</h4>
-                            <p id="shipping-status">Preparing for shipment</p>
-                        </div>
-                    </div>
-                    
-                    <div class="progress-line"></div>
-                    
-                    <div class="progress-step" data-step="3">
-                        <div class="step-circle">
-                            <div class="step-icon">🏠</div>
-                        </div>
-                        <div class="step-label">
-                            <h4>Delivered</h4>
-                            <p id="delivery-estimate">Expected delivery</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <!-- Order Details -->
             <div class="order-details">

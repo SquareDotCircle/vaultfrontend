@@ -1637,21 +1637,95 @@ body.payment-page {
     font-size: 1.1rem;
 }
 
-/* Order Tracking Styles */
-.order-header {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 2rem;
-    margin-bottom: 2rem;
+/* Progress Hero Section */
+.progress-hero {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+    background-image: 
+        radial-gradient(circle at 20% 80%, rgba(255, 221, 0, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(0, 217, 36, 0.1) 0%, transparent 50%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
 }
 
-.order-number {
-    background: rgba(255, 221, 0, 0.1);
-    border: 1px solid rgba(255, 221, 0, 0.3);
-    border-radius: 8px;
-    padding: 1rem;
+.progress-hero-content {
+    max-width: 1200px;
+    width: 100%;
     text-align: center;
 }
 
+.success-header {
+    margin-bottom: 3rem;
+}
+
+.success-checkmark {
+    font-size: 5rem;
+    color: #00d924;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 30px rgba(0, 217, 36, 0.5);
+    animation: checkmark-pulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes checkmark-pulse {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.1); }
+}
+
+.success-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 3.5rem;
+    color: #fff;
+    margin: 0 0 1rem 0;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.success-subtitle {
+    font-size: 1.2rem;
+    color: #ccc;
+    margin: 0;
+    font-weight: 300;
+}
+
+.order-number-hero {
+    background: rgba(255, 221, 0, 0.1);
+    border: 2px solid rgba(255, 221, 0, 0.3);
+    border-radius: 15px;
+    padding: 1.5rem 2rem;
+    margin: 3rem auto;
+    display: inline-block;
+    backdrop-filter: blur(10px);
+}
+
+.order-label {
+    color: #ffdd00;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+    margin-right: 1rem;
+}
+
+.order-id-display {
+    color: #fff;
+    font-family: 'Jura', monospace;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+}
+
+.progress-diagram-hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 4rem;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+/* Order Tracking Styles */
 .tracking-container {
     margin-bottom: 2rem;
 }
@@ -1672,22 +1746,32 @@ body.payment-page {
     text-align: center;
     flex: 0 0 auto;
     position: relative;
-    min-width: 120px;
+    min-width: 200px;
+}
+
+.progress-diagram-hero .progress-step {
+    min-width: 250px;
 }
 
 .step-circle {
-    width: 70px;
-    height: 70px;
+    width: 90px;
+    height: 90px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.1);
-    border: 3px solid rgba(255, 255, 255, 0.2);
+    border: 4px solid rgba(255, 255, 255, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     transition: all 0.4s ease;
     position: relative;
     z-index: 2;
+}
+
+.progress-diagram-hero .step-circle {
+    width: 110px;
+    height: 110px;
+    border-width: 5px;
 }
 
 .progress-step.completed .step-circle {
@@ -1715,9 +1799,13 @@ body.payment-page {
 }
 
 .step-icon {
-    font-size: 1.8rem;
+    font-size: 2.2rem;
     filter: grayscale(1);
     transition: filter 0.3s ease;
+}
+
+.progress-diagram-hero .step-icon {
+    font-size: 2.8rem;
 }
 
 .progress-step.completed .step-icon,
@@ -1730,14 +1818,23 @@ body.payment-page {
     margin: 0 0 0.5rem 0;
     font-family: 'Exo', sans-serif;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 1.1rem;
+}
+
+.progress-diagram-hero .step-label h4 {
+    font-size: 1.3rem;
+    margin-bottom: 0.75rem;
 }
 
 .step-label p {
     color: #ccc;
     margin: 0;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     line-height: 1.3;
+}
+
+.progress-diagram-hero .step-label p {
+    font-size: 1rem;
 }
 
 .progress-step.completed .step-label h4 {
@@ -1755,9 +1852,16 @@ body.payment-page {
     position: relative;
     margin: 0 1rem;
     border-radius: 2px;
-    min-width: 50px;
-    margin-top: -35px;
+    min-width: 80px;
+    margin-top: -55px;
     z-index: 1;
+}
+
+.progress-diagram-hero .progress-line {
+    height: 6px;
+    min-width: 120px;
+    margin-top: -70px;
+    border-radius: 3px;
 }
 
 .progress-line.active {
@@ -1862,32 +1966,84 @@ body.payment-page {
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
-    .progress-diagram {
+    .progress-hero {
+        min-height: 100vh;
+        padding: 1rem;
+    }
+    
+    .success-title {
+        font-size: 2.5rem;
+    }
+    
+    .success-subtitle {
+        font-size: 1rem;
+    }
+    
+    .success-checkmark {
+        font-size: 4rem;
+    }
+    
+    .order-number-hero {
+        padding: 1rem 1.5rem;
+        margin: 2rem auto;
+    }
+    
+    .order-label {
+        font-size: 1rem;
+        display: block;
+        margin-bottom: 0.5rem;
+        margin-right: 0;
+    }
+    
+    .order-id-display {
+        font-size: 1.2rem;
+    }
+    
+    .progress-diagram,
+    .progress-diagram-hero {
         flex-direction: column;
         gap: 1.5rem;
         padding: 1.5rem 0;
+        margin-top: 2rem;
     }
     
-    .progress-step {
+    .progress-step,
+    .progress-diagram-hero .progress-step {
         min-width: 100%;
     }
     
-    .step-circle {
-        width: 60px;
-        height: 60px;
-        margin-bottom: 0.75rem;
+    .step-circle,
+    .progress-diagram-hero .step-circle {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 1rem;
+        border-width: 4px;
     }
     
-    .step-icon {
-        font-size: 1.5rem;
+    .step-icon,
+    .progress-diagram-hero .step-icon {
+        font-size: 2rem;
     }
     
-    .progress-line {
+    .step-label h4,
+    .progress-diagram-hero .step-label h4 {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .step-label p,
+    .progress-diagram-hero .step-label p {
+        font-size: 0.9rem;
+    }
+    
+    .progress-line,
+    .progress-diagram-hero .progress-line {
         width: 4px;
-        height: 40px;
+        height: 50px;
         margin: 0;
         margin-top: 0;
         background: rgba(255, 255, 255, 0.1);
+        min-width: auto;
     }
     
     .progress-line.active {
