@@ -1,11 +1,11 @@
 // Supabase configuration
-// You'll need to replace these with your actual Supabase project credentials
+// Replace these with your actual Supabase project credentials
 
-const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // Replace with your Supabase URL
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Replace with your Supabase anon key
+const SUPABASE_URL = 'https://caghluqxjxeeqkhbxovw.supabase.co'; // Your Supabase project URL
+const SUPABASE_PUBLIC_KEY = 'SUPABASE_PUBLIC_KEY'; // Replace with your public key
 
 // Initialize Supabase client
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLIC_KEY);
 
 // Order management functions
 const OrderManager = {

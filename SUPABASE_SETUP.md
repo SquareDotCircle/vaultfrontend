@@ -20,12 +20,17 @@
 ## 3. Get Your Supabase Credentials
 
 1. In your Supabase dashboard, go to **Settings** → **API**
-2. Copy your **Project URL** and **anon public** key
-3. In `public/supabase-config.js`, replace:
+2. You'll see two important keys:
+   - **SUPABASE_PUBLIC_KEY** (anon key) - Safe for frontend use
+   - **SUPABASE_SERVICE_ROLE_KEY** - Server-side only, never expose in frontend!
+3. Copy your **Project URL** and **SUPABASE_PUBLIC_KEY**
+4. In `public/supabase-config.js`, replace:
    ```javascript
    const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // Replace with your actual URL
-   const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Replace with your anon key
+   const SUPABASE_PUBLIC_KEY = 'YOUR_SUPABASE_PUBLIC_KEY'; // Replace with your public key
    ```
+
+**⚠️ IMPORTANT:** Only use the **SUPABASE_PUBLIC_KEY** in frontend code. The **SUPABASE_SERVICE_ROLE_KEY** should only be used in server-side code and never exposed to browsers.
 
 ## 4. Configure Row Level Security (Optional but Recommended)
 
@@ -48,7 +53,7 @@ For production, consider storing credentials as environment variables:
 
 ```javascript
 const SUPABASE_URL = process.env.SUPABASE_URL || 'your-fallback-url';
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'your-fallback-key';
+const SUPABASE_PUBLIC_KEY = process.env.SUPABASE_PUBLIC_KEY || 'your-fallback-key';
 ```
 
 ## 7. Database Schema Overview
