@@ -2,8 +2,11 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeOrderTracking();
 });
 
-function initializeOrderTracking() {
-    // Generate unique order number
+async function initializeOrderTracking() {
+    // Try to save order to database first
+    await saveOrderToDatabase();
+    
+    // Generate unique order number (or use saved one)
     generateOrderNumber();
     
     // Set current time for order placement
@@ -19,18 +22,25 @@ function initializeOrderTracking() {
 function generateOrderNumber() {
     const orderIdElement = document.getElementById('order-id');
     if (orderIdElement) {
-        // Generate order number based on current date and random number
-        const date = new Date();
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const random = Math.floor(Math.random() * 9000) + 1000; // 4-digit random number
+        // Check if we have a saved order number from database
+        let orderNumber = sessionStorage.getItem('savedOrderNumber');
         
-        const orderNumber = `#GO-${year}${month}${day}-${random}`;
-        orderIdElement.textContent = orderNumber;
+        if (!orderNumber) {
+            // Generate order number based on current date and random number
+            const date = new Date();
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const random = Math.floor(Math.random() * 9000) + 1000; // 4-digit random number
+            
+            orderNumber = `GO-${year}${month}${day}-${random}`;
+            
+            // Store order number for future reference
+            sessionStorage.setItem('orderNumber', orderNumber);
+        }
         
-        // Store order number for future reference
-        sessionStorage.setItem('orderNumber', orderNumber);
+        // Display with # prefix for UI
+        orderIdElement.textContent = `#${orderNumber}`;
     }
 }
 
@@ -142,6 +152,48 @@ window.getOrderInfo = function() {
         orderDate: new Date().toISOString()
     };
 };
+
+// Save order to Supabase database
+async function saveOrderToDatabase() {
+    try {
+        // Check if we have pending order data and OrderManager is available
+        const pendingOrderData = sessionStorage.getItem('pendingOrderData');
+        if (!pendingOrderData || !window.OrderManager) {
+            console.log('No pending order data or OrderManager not available');
+            return;
+        }
+
+        const orderData = JSON.parse(pendingOrderData);
+        
+        // Get Stripe session ID from URL parameters if available
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session_id');
+        
+        if (sessionId) {
+            orderData.stripe_session_id = sessionId;
+            orderData.status = 'paid'; // Update status to paid since we're on success page
+        }
+
+        // Save order to database
+        const result = await window.OrderManager.saveOrder(orderData);
+        
+        if (result.success) {
+            console.log('Order saved successfully:', result.data);
+            
+            // Store the database order ID for future reference
+            sessionStorage.setItem('savedOrderId', result.data.id);
+            sessionStorage.setItem('savedOrderNumber', result.data.order_number);
+            
+            // Clear pending order data since it's now saved
+            sessionStorage.removeItem('pendingOrderData');
+        } else {
+            console.error('Failed to save order:', result.error);
+        }
+    } catch (error) {
+        console.error('Error saving order to database:', error);
+        // Don't block the user experience even if database save fails
+    }
+}
 
 // Clean up interval when page is unloaded
 window.addEventListener('beforeunload', function() {

@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize referral code system
     initializeReferralCodes();
     
-    shippingForm.addEventListener('submit', function(e) {
+    shippingForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
         // Collect all form data
@@ -29,6 +29,26 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Store shipping information in sessionStorage
         sessionStorage.setItem('shippingInfo', JSON.stringify(shippingInfo));
+        
+        // Prepare order data for database (if Supabase is configured)
+        if (window.OrderManager && typeof window.OrderManager.prepareOrderData === 'function') {
+            try {
+                const discountInfo = getCurrentDiscount();
+                const orderData = window.OrderManager.prepareOrderData(
+                    shippingInfo, 
+                    { sessionId: null }, // Will be updated after Stripe payment
+                    discountInfo
+                );
+                
+                // Store order data temporarily for after payment
+                sessionStorage.setItem('pendingOrderData', JSON.stringify(orderData));
+                
+                console.log('Order data prepared:', orderData);
+            } catch (error) {
+                console.error('Error preparing order data:', error);
+                // Continue anyway - don't block the checkout process
+            }
+        }
         
         // Redirect to payment page
         window.location.href = 'payment.html';
