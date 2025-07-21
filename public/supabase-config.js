@@ -1,8 +1,8 @@
 // Supabase configuration
-// Replace these with your actual Supabase project credentials
+// Replace the placeholder with your actual public key
 
-const SUPABASE_URL = 'https://caghluqxjxeeqkhbxovw.supabase.co'; // Your Supabase project URL
-const SUPABASE_PUBLIC_KEY = 'SUPABASE_PUBLIC_KEY'; // Replace with your public key
+const SUPABASE_URL = 'https://caghluqxjxeeqkhbxovw.supabase.co';
+const SUPABASE_PUBLIC_KEY = '{{SUPABASE_PUBLIC_KEY}}'; // This will be replaced at build time
 
 // Initialize Supabase client
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLIC_KEY);
