@@ -31,9 +31,16 @@ document.addEventListener('DOMContentLoaded', function() {
         sessionStorage.setItem('shippingInfo', JSON.stringify(shippingInfo));
         
         // Prepare order data for database (if Supabase is configured)
+        console.log('🔍 Checking if OrderManager is available...');
+        console.log('🔍 window.OrderManager exists:', !!window.OrderManager);
+        console.log('🔍 prepareOrderData function exists:', !!(window.OrderManager && typeof window.OrderManager.prepareOrderData === 'function'));
+        
         if (window.OrderManager && typeof window.OrderManager.prepareOrderData === 'function') {
             try {
+                console.log('📋 Preparing order data...');
                 const discountInfo = getCurrentDiscount();
+                console.log('💰 Discount info:', discountInfo);
+                
                 const orderData = window.OrderManager.prepareOrderData(
                     shippingInfo, 
                     { sessionId: null }, // Will be updated after Stripe payment
@@ -43,11 +50,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Store order data temporarily for after payment
                 sessionStorage.setItem('pendingOrderData', JSON.stringify(orderData));
                 
-                console.log('Order data prepared:', orderData);
+                console.log('✅ Order data prepared and stored in sessionStorage');
+                console.log('📦 Order data:', orderData);
             } catch (error) {
-                console.error('Error preparing order data:', error);
+                console.error('❌ Error preparing order data:', error);
+                console.error('❌ Error stack:', error.stack);
                 // Continue anyway - don't block the checkout process
             }
+        } else {
+            console.warn('⚠️ OrderManager not available - order will not be saved to database');
         }
         
         // Redirect to payment page

@@ -5,27 +5,44 @@ const SUPABASE_URL = 'https://caghluqxjxeeqkhbxovw.supabase.co';
 const SUPABASE_PUBLIC_KEY = '{{SUPABASE_PUBLIC_KEY}}'; // This will be replaced at build time
 
 // Initialize Supabase client
+console.log('🔧 Initializing Supabase client...');
+console.log('📍 SUPABASE_URL:', SUPABASE_URL);
+console.log('🔑 SUPABASE_PUBLIC_KEY (first 20 chars):', SUPABASE_PUBLIC_KEY ? SUPABASE_PUBLIC_KEY.substring(0, 20) + '...' : 'NOT SET');
+
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLIC_KEY);
+
+if (supabaseClient) {
+    console.log('✅ Supabase client initialized successfully');
+} else {
+    console.error('❌ Failed to initialize Supabase client');
+}
 
 // Order management functions
 const OrderManager = {
     // Save order to database
     async saveOrder(orderData) {
+        console.log('🚀 Starting saveOrder process...');
+        console.log('📦 Order data to save:', JSON.stringify(orderData, null, 2));
+        
         try {
+            console.log('📡 Attempting to insert into Supabase...');
             const { data, error } = await supabaseClient
                 .from('orders')
                 .insert([orderData])
                 .select();
 
             if (error) {
-                console.error('Error saving order:', error);
+                console.error('❌ Supabase insert error:', error);
+                console.error('❌ Error details:', JSON.stringify(error, null, 2));
                 return { success: false, error: error.message };
             }
 
-            console.log('Order saved successfully:', data);
+            console.log('✅ Order saved successfully to Supabase!');
+            console.log('📋 Saved data:', JSON.stringify(data, null, 2));
             return { success: true, data: data[0] };
         } catch (err) {
-            console.error('Error in saveOrder:', err);
+            console.error('💥 Exception in saveOrder:', err);
+            console.error('💥 Error stack:', err.stack);
             return { success: false, error: err.message };
         }
     },
@@ -142,8 +159,37 @@ const OrderManager = {
         orderData.total_amount = Math.max(total, 0);
 
         return orderData;
+    },
+
+    // Test database connection
+    async testConnection() {
+        console.log('🧪 Testing Supabase connection...');
+        try {
+            const { data, error } = await supabaseClient
+                .from('orders')
+                .select('count(*)')
+                .limit(1);
+            
+            if (error) {
+                console.error('❌ Database connection test failed:', error);
+                return { success: false, error: error.message };
+            }
+            
+            console.log('✅ Database connection test successful');
+            return { success: true };
+        } catch (err) {
+            console.error('💥 Exception in connection test:', err);
+            return { success: false, error: err.message };
+        }
     }
 };
 
 // Make OrderManager available globally
-window.OrderManager = OrderManager; 
+window.OrderManager = OrderManager;
+
+// Test connection on load
+document.addEventListener('DOMContentLoaded', async function() {
+    if (window.OrderManager) {
+        await window.OrderManager.testConnection();
+    }
+}); 

@@ -155,30 +155,50 @@ window.getOrderInfo = function() {
 
 // Save order to Supabase database
 async function saveOrderToDatabase() {
+    console.log('🏁 Starting saveOrderToDatabase process...');
+    
     try {
         // Check if we have pending order data and OrderManager is available
         const pendingOrderData = sessionStorage.getItem('pendingOrderData');
-        if (!pendingOrderData || !window.OrderManager) {
-            console.log('No pending order data or OrderManager not available');
+        console.log('📂 Pending order data exists:', !!pendingOrderData);
+        console.log('🔧 OrderManager available:', !!window.OrderManager);
+        
+        if (!pendingOrderData) {
+            console.warn('⚠️ No pending order data found in sessionStorage');
+            return;
+        }
+        
+        if (!window.OrderManager) {
+            console.warn('⚠️ OrderManager not available on success page');
             return;
         }
 
+        console.log('📋 Parsing order data from sessionStorage...');
         const orderData = JSON.parse(pendingOrderData);
+        console.log('📦 Original order data:', JSON.stringify(orderData, null, 2));
         
         // Get Stripe session ID from URL parameters if available
         const urlParams = new URLSearchParams(window.location.search);
         const sessionId = urlParams.get('session_id');
+        console.log('💳 Stripe session ID from URL:', sessionId);
         
         if (sessionId) {
             orderData.stripe_session_id = sessionId;
             orderData.status = 'paid'; // Update status to paid since we're on success page
+            console.log('✅ Updated order data with Stripe session ID and paid status');
         }
 
+        console.log('💾 Final order data to save:', JSON.stringify(orderData, null, 2));
+
         // Save order to database
+        console.log('🚀 Calling OrderManager.saveOrder...');
         const result = await window.OrderManager.saveOrder(orderData);
         
+        console.log('📊 Save result:', JSON.stringify(result, null, 2));
+        
         if (result.success) {
-            console.log('Order saved successfully:', result.data);
+            console.log('🎉 Order saved successfully to database!');
+            console.log('📋 Saved order data:', result.data);
             
             // Store the database order ID for future reference
             sessionStorage.setItem('savedOrderId', result.data.id);
@@ -186,11 +206,13 @@ async function saveOrderToDatabase() {
             
             // Clear pending order data since it's now saved
             sessionStorage.removeItem('pendingOrderData');
+            console.log('🧹 Cleaned up pending order data from sessionStorage');
         } else {
-            console.error('Failed to save order:', result.error);
+            console.error('❌ Failed to save order to database:', result.error);
         }
     } catch (error) {
-        console.error('Error saving order to database:', error);
+        console.error('💥 Exception in saveOrderToDatabase:', error);
+        console.error('💥 Error stack:', error.stack);
         // Don't block the user experience even if database save fails
     }
 }
