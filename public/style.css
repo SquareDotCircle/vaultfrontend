@@ -2332,4 +2332,543 @@ body.payment-page {
 .back-button {
     margin-bottom: 1rem;
     width: 100%;
+}
+
+/* Consultant page styles */
+.consultant-page {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    min-height: 100vh;
+}
+
+.consultant-hero {
+    padding: 8rem 0 4rem;
+    background: radial-gradient(ellipse at center, rgba(0, 255, 136, 0.1) 0%, transparent 70%);
+}
+
+.consultant-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: #00ff88;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+}
+
+.consultant-subtitle {
+    font-size: 1.3rem;
+    color: #b8b8b8;
+    margin-bottom: 3rem;
+    line-height: 1.6;
+    max-width: 600px;
+}
+
+.value-props {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.value-prop {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(0, 255, 136, 0.2);
+}
+
+.prop-icon {
+    font-size: 2rem;
+    min-width: 60px;
+}
+
+.prop-text h3 {
+    color: #00ff88;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+}
+
+.prop-text p {
+    color: #b8b8b8;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.roi-note {
+    color: #888;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    font-style: italic;
+}
+
+.consultant-demo {
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 16px;
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 255, 136, 0.1);
+}
+
+.demo-screen {
+    padding: 2rem;
+}
+
+.demo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+}
+
+.demo-title {
+    color: #00ff88;
+    font-weight: 600;
+}
+
+.demo-status {
+    color: #ffaa00;
+    font-size: 0.9rem;
+}
+
+.demo-query {
+    background: rgba(0, 255, 136, 0.1);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.query-text {
+    color: #00ff88;
+    font-style: italic;
+}
+
+.demo-results {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.result-item {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 3px solid #00ff88;
+}
+
+.result-item h4 {
+    color: #00ff88;
+    margin-bottom: 0.5rem;
+}
+
+.result-item p {
+    color: #b8b8b8;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.consultant-problems {
+    padding: 4rem 0;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.consultant-problems h2 {
+    text-align: center;
+    color: #ff4444;
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    font-family: 'Orbitron', monospace;
+}
+
+.problem-scenarios {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.scenario {
+    background: rgba(255, 68, 68, 0.1);
+    border: 1px solid rgba(255, 68, 68, 0.3);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+}
+
+.scenario-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.scenario h3 {
+    color: #ff4444;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.scenario p {
+    color: #b8b8b8;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.scenario-cost {
+    color: #ff4444;
+    font-weight: 600;
+    font-size: 0.9rem;
+    background: rgba(255, 68, 68, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+.consultant-solution {
+    padding: 4rem 0;
+}
+
+.solution-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.solution-benefits {
+    display: grid;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.benefit {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 3px solid #00ff88;
+}
+
+.benefit h4 {
+    color: #00ff88;
+    margin-bottom: 0.5rem;
+}
+
+.benefit p {
+    color: #b8b8b8;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.knowledge-matrix {
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1px solid rgba(0, 255, 136, 0.2);
+}
+
+.matrix-title {
+    color: #00ff88;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.knowledge-areas {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+}
+
+.knowledge-area {
+    background: rgba(0, 255, 136, 0.1);
+    color: #00ff88;
+    padding: 0.75rem;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.consultant-roi {
+    padding: 4rem 0;
+    background: rgba(0, 255, 136, 0.05);
+}
+
+.roi-calculator {
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 16px;
+    padding: 3rem;
+    border: 1px solid rgba(0, 255, 136, 0.2);
+    margin-bottom: 3rem;
+}
+
+.roi-inputs {
+    margin-bottom: 2rem;
+}
+
+.roi-input label {
+    color: #00ff88;
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.roi-input select {
+    width: 100%;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    border-radius: 8px;
+    font-size: 1.1rem;
+}
+
+.roi-results {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.roi-metric {
+    text-align: center;
+    padding: 1.5rem;
+    background: rgba(0, 255, 136, 0.1);
+    border-radius: 12px;
+    border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.metric-value {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #00ff88;
+    font-family: 'Orbitron', monospace;
+}
+
+.metric-label {
+    color: #b8b8b8;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.additional-benefits {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.additional-benefit {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-radius: 8px;
+    color: #b8b8b8;
+    line-height: 1.5;
+}
+
+.consultant-testimonials {
+    padding: 4rem 0;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.testimonials {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.testimonial {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2rem;
+    border-radius: 12px;
+    border-left: 4px solid #00ff88;
+}
+
+.quote {
+    color: #fff;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    font-style: italic;
+}
+
+.author {
+    color: #00ff88;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.consultant-pricing {
+    padding: 4rem 0;
+}
+
+.pricing-tiers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.pricing-tier {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.pricing-tier:hover {
+    transform: translateY(-5px);
+}
+
+.pricing-tier.featured {
+    border-color: #00ff88;
+    background: rgba(0, 255, 136, 0.1);
+    transform: scale(1.05);
+}
+
+.tier-badge {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #00ff88;
+    color: #000;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.tier-name {
+    color: #00ff88;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.tier-price {
+    color: #fff;
+    font-size: 3rem;
+    font-weight: 900;
+    font-family: 'Orbitron', monospace;
+    margin-bottom: 0.5rem;
+}
+
+.tier-billing {
+    color: #888;
+    margin-bottom: 2rem;
+}
+
+.tier-features {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+}
+
+.feature {
+    color: #b8b8b8;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tier-cta {
+    display: inline-block;
+    background: #00ff88;
+    color: #000;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.tier-cta:hover {
+    background: #00cc6a;
+    transform: translateY(-2px);
+}
+
+.guarantee {
+    text-align: center;
+    margin-top: 3rem;
+    padding: 2rem;
+    background: rgba(0, 255, 136, 0.1);
+    border-radius: 12px;
+    border: 1px solid rgba(0, 255, 136, 0.2);
+}
+
+.consultant-cta {
+    padding: 4rem 0;
+    background: linear-gradient(135deg, rgba(0, 255, 136, 0.2) 0%, rgba(0, 0, 0, 0.8) 100%);
+    text-align: center;
+}
+
+.cta-content h2 {
+    font-size: 2.5rem;
+    color: #00ff88;
+    margin-bottom: 1rem;
+    font-family: 'Orbitron', monospace;
+}
+
+.cta-content p {
+    font-size: 1.2rem;
+    color: #b8b8b8;
+    margin-bottom: 2rem;
+}
+
+.cta-button.huge {
+    font-size: 1.3rem;
+    padding: 1.5rem 3rem;
+}
+
+.cta-details {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.detail {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+/* Responsive adjustments for consultant page */
+@media (max-width: 768px) {
+    .consultant-title {
+        font-size: 2.5rem;
+    }
+    
+    .solution-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .knowledge-areas {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .roi-results {
+        grid-template-columns: 1fr;
+    }
+    
+    .pricing-tiers {
+        grid-template-columns: 1fr;
+    }
+    
+    .additional-benefits {
+        grid-template-columns: 1fr;
+    }
+    
+    .cta-details {
+        flex-direction: column;
+        gap: 1rem;
+    }
 } 
