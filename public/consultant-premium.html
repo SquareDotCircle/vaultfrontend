@@ -8,22 +8,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo:wght@300;400;500;600;700&family=Jura:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="consultant-premium-page">
-    <nav class="nav">
-        <div class="nav-brand">
-            <span class="brand-go">Go</span> <span class="brand-offline">Offline</span>
-            <span class="brand-elite">Elite</span>
-        </div>
-        <div class="nav-links">
-            <a href="index.html">Home</a>
-            <a href="consultants.html">For Consultants</a>
-            <a href="mailto:elite@databack.ai" class="cta-button primary">Contact Elite Sales</a>
-        </div>
-    </nav>
-
     <div class="product-name-corner">Vault Elite</div>
 
-    <!-- Hero Section -->
-    <section class="premium-hero">
+    <div class="page-container">
+        <!-- Hero Section -->
+        <section class="premium-hero">
         <div class="container">
             <div class="hero-content">
                 <div class="urgency-banner">
@@ -392,23 +381,7 @@
             </div>
         </div>
     </section>
-
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-brand">
-                    <span class="brand-go">Go</span> <span class="brand-offline">Offline</span>
-                    <span class="brand-elite">Elite</span>
-                </div>
-                <div class="footer-links">
-                    <a href="index.html">Home</a>
-                    <a href="consultants.html">For Consultants</a>
-                    <a href="consultant-premium.html">Elite Systems</a>
-                    <a href="mailto:elite@databack.ai">Elite Contact</a>
-                </div>
-            </div>
-        </div>
-    </footer>
+    </div>
 
     <script>
         // Elite ROI Calculator
@@ -431,5 +404,12 @@
         document.getElementById('systemCost').addEventListener('change', updateEliteROI);
         updateEliteROI(); // Initialize
     </script>
+
+    <nav class="full-nav">
+        <a href="index.html">Home</a>
+        <a href="consultants.html">For Consultants</a>
+        <a href="consultant-premium.html" class="active">Elite</a>
+        <a href="mailto:elite@databack.ai" class="cta-nav">Contact Sales</a>
+    </nav>
 </body>
 </html> 
