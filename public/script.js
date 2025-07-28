@@ -1,117 +1,135 @@
-document.addEventListener('DOMContentLoaded', function() {
-    
-    // Add subtle cursor glow effect
-    const cursor = document.createElement('div');
-    cursor.className = 'cursor-glow';
-    document.body.appendChild(cursor);
-    
-    document.addEventListener('mousemove', (e) => {
-        cursor.style.left = e.clientX + 'px';
-        cursor.style.top = e.clientY + 'px';
-    });
-    
-    // Add cursor glow styles
-    const glowStyles = document.createElement('style');
-    glowStyles.textContent = `
-        .cursor-glow {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            background: radial-gradient(circle, rgba(0, 255, 148, 0.3) 0%, transparent 70%);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            transform: translate(-50%, -50%);
-            transition: opacity 0.3s ease;
-        }
-        
-        @media (hover: none) {
-            .cursor-glow {
-                display: none;
+// Smooth scroll animations for sections
+function initScrollAnimations() {
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate');
             }
+        });
+    }, observerOptions);
+
+    // Observe all animatable elements
+    const animatableElements = document.querySelectorAll('.scroll-animate');
+    animatableElements.forEach(el => observer.observe(el));
+
+    // Video/image scaling animations for demo sections
+    const mediaElements = document.querySelectorAll('.demo-video, .mapping-video, .customization-video');
+    
+    const mediaObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.transform = 'scale(1)';
+                entry.target.style.opacity = '1';
+            }
+        });
+    }, {
+        threshold: 0.3,
+        rootMargin: '0px 0px -100px 0px'
+    });
+
+    mediaElements.forEach(el => {
+        el.style.transform = 'scale(0.9)';
+        el.style.opacity = '0.7';
+        el.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+        mediaObserver.observe(el);
+    });
+}
+
+// Progress bar animations for download simulation
+function animateProgressBars() {
+    const progressFills = document.querySelectorAll('.progress-fill');
+    
+    const progressObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const progressBar = entry.target;
+                const progress = progressBar.getAttribute('data-progress');
+                
+                // Animate to the target width
+                setTimeout(() => {
+                    progressBar.style.width = progress + '%';
+                }, 500);
+            }
+        });
+    }, { threshold: 0.5 });
+
+    progressFills.forEach(fill => {
+        fill.style.width = '0%';
+        fill.style.transition = 'width 2s cubic-bezier(0.4, 0, 0.2, 1)';
+        progressObserver.observe(fill);
+    });
+}
+
+// Smooth hover effects for cards
+function initCardHoverEffects() {
+    const cards = document.querySelectorAll('.app-card, .leader-item, .download-item');
+    
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-4px)';
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0)';
+        });
+    });
+}
+
+// Initialize all animations and effects
+document.addEventListener('DOMContentLoaded', () => {
+    initScrollAnimations();
+    animateProgressBars();
+    initCardHoverEffects();
+    
+    // Add scroll animation classes to relevant elements
+    const elementsToAnimate = document.querySelectorAll(`
+        .privacy-statement-section,
+        .vault-demo,
+        .vault-mapping,
+        .vault-customization,
+        .updates-section,
+        .preparedness-section,
+        .application-grid
+    `);
+    
+    elementsToAnimate.forEach(el => {
+        el.classList.add('scroll-animate');
+    });
+});
+
+// Smooth scrolling for navigation links
+document.addEventListener('click', (e) => {
+    if (e.target.matches('a[href^="#"]')) {
+        e.preventDefault();
+        const targetId = e.target.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+        
+        if (targetElement) {
+            targetElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
         }
-    `;
-    document.head.appendChild(glowStyles);
+    }
+});
+
+// Add parallax effect to hero section
+function initParallaxEffect() {
+    const hero = document.querySelector('.hero-section');
+    if (!hero) return;
     
-    // Hide cursor glow on touch devices
-    document.addEventListener('touchstart', () => {
-        cursor.style.opacity = '0';
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        const rate = scrolled * -0.3;
+        
+        hero.style.transform = `translateY(${rate}px)`;
     });
-    
-    document.addEventListener('touchend', () => {
-        cursor.style.opacity = '1';
-    });
+}
 
-    // Scroll-triggered video zoom animation
-    const vaultDemo = document.getElementById('vault-demo');
-    const demoVideo = document.querySelector('.demo-video');
-    
-    if (vaultDemo && demoVideo) {
-        const observerOptions = {
-            root: null,
-            rootMargin: '-20% 0px -20% 0px',
-            threshold: 0
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    demoVideo.classList.add('scrolled');
-                } else {
-                    demoVideo.classList.remove('scrolled');
-                }
-            });
-        }, observerOptions);
-
-        observer.observe(vaultDemo);
-    }
-
-    // Scroll-triggered mapping video animation
-    const vaultMapping = document.getElementById('vault-mapping');
-    const mappingVideo = document.querySelector('.mapping-video');
-    
-    if (vaultMapping && mappingVideo) {
-        const mappingObserverOptions = {
-            root: null,
-            rootMargin: '-20% 0px -20% 0px',
-            threshold: 0
-        };
-
-        const mappingObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    mappingVideo.classList.add('scrolled');
-                } else {
-                    mappingVideo.classList.remove('scrolled');
-                }
-            });
-        }, mappingObserverOptions);
-
-        mappingObserver.observe(vaultMapping);
-    }
-
-    // Scroll-triggered customization video animation
-    const vaultCustomization = document.getElementById('vault-customization');
-    const customizationVideo = document.querySelector('.customization-video');
-    
-    if (vaultCustomization && customizationVideo) {
-        const customizationObserverOptions = {
-            root: null,
-            rootMargin: '-20% 0px -20% 0px',
-            threshold: 0
-        };
-
-        const customizationObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    customizationVideo.classList.add('scrolled');
-                } else {
-                    customizationVideo.classList.remove('scrolled');
-                }
-            });
-        }, customizationObserverOptions);
-
-        customizationObserver.observe(vaultCustomization);
-    }
-    
-}); 
+// Initialize parallax on load
+document.addEventListener('DOMContentLoaded', initParallaxEffect); 

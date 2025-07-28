@@ -17,7 +17,7 @@ function setupPaymentButton() {
         paymentForm.method = 'POST';
         
         // Add shipping method and discount as hidden inputs
-        const shippingInfo = sessionStorage.getItem('shippingInfo');
+  const shippingInfo = sessionStorage.getItem('shippingInfo');
         const info = shippingInfo ? JSON.parse(shippingInfo) : {};
         const shippingMethod = info.shipping || 'standard';
         
@@ -73,7 +73,7 @@ function handlePaymentResult() {
     } else if (urlParams.get('canceled') === 'true') {
         // Payment was cancelled
         showError('Payment was cancelled. You can try again when ready.');
-    }
+  }
 }
 
 // Display shipping information
@@ -85,16 +85,16 @@ function displayShippingInfo() {
         const shippingDetails = document.getElementById('shipping-details');
         
         if (shippingDetails) {
-            const address = `${info.firstName} ${info.lastName}<br>
-                            ${info.address}<br>
-                            ${info.city}, ${info.state} ${info.zipCode}<br>
-                            ${info.country}`;
-            
-            shippingDetails.innerHTML = address;
+        const address = `${info.firstName} ${info.lastName}<br>
+                        ${info.address}<br>
+                        ${info.city}, ${info.state} ${info.zipCode}<br>
+                        ${info.country}`;
+        
+        shippingDetails.innerHTML = address;
         }
         
         if (shippingSummary) {
-            shippingSummary.style.display = 'block';
+        shippingSummary.style.display = 'block';
         }
         
         // Update price based on shipping option
@@ -137,8 +137,8 @@ function addBackButton() {
     
     const form = document.getElementById('payment-form');
     if (paymentBox && form) {
-        paymentBox.insertBefore(backButton, form);
-    }
+    paymentBox.insertBefore(backButton, form);
+}
 }
 
 // Show error messages
