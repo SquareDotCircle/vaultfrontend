@@ -14,10 +14,16 @@ class NetworkDemo {
             x: 0, y: 0, width: 140, height: 140
         };
         
-        // Spring physics constants
+        // Enhanced physics constants inspired by particle-love.com
         this.springStrength = 0.02;
         this.dampening = 0.95;
         this.maxConnectionDistance = 100;
+        this.mouseAttraction = false;
+        this.mouseRepulsion = true;
+        this.mouseEffectRadius = 150;
+        this.mouseForce = 0.5;
+        this.friction = 0.98;
+        this.showTrails = false;
         
         this.init();
     }
@@ -26,9 +32,47 @@ class NetworkDemo {
         this.resizeCanvas();
         this.createNodes();
         this.setupEventListeners();
+        this.setupControls();
         this.animate();
         
         window.addEventListener('resize', () => this.resizeCanvas());
+    }
+    
+    setupControls() {
+        const controlBtns = document.querySelectorAll('.control-btn');
+        controlBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // Remove active class from all buttons
+                controlBtns.forEach(b => b.classList.remove('active'));
+                
+                // Add active class to clicked button
+                e.target.classList.add('active');
+                
+                // Update settings based on mode
+                const mode = e.target.dataset.mode;
+                this.setInteractionMode(mode);
+            });
+        });
+    }
+    
+    setInteractionMode(mode) {
+        // Reset all modes
+        this.mouseAttraction = false;
+        this.mouseRepulsion = false;
+        this.showTrails = false;
+        
+        switch(mode) {
+            case 'repulsion':
+                this.mouseRepulsion = true;
+                break;
+            case 'attraction':
+                this.mouseAttraction = true;
+                break;
+            case 'trails':
+                this.showTrails = true;
+                this.mouseRepulsion = true; // Keep repulsion with trails
+                break;
+        }
     }
     
     resizeCanvas() {
@@ -152,9 +196,23 @@ class NetworkDemo {
         this.canvas.addEventListener('mousedown', (e) => this.onMouseDown(e));
         this.canvas.addEventListener('mousemove', (e) => this.onMouseMove(e));
         this.canvas.addEventListener('mouseup', (e) => this.onMouseUp(e));
+        this.canvas.addEventListener('mouseleave', (e) => this.onMouseLeave(e));
         this.canvas.addEventListener('touchstart', (e) => this.onTouchStart(e));
         this.canvas.addEventListener('touchmove', (e) => this.onTouchMove(e));
         this.canvas.addEventListener('touchend', (e) => this.onTouchEnd(e));
+        
+        // Track mouse position even when not dragging
+        this.canvas.addEventListener('mousemove', (e) => {
+            const pos = this.getEventPos(e);
+            this.mouse.x = pos.x;
+            this.mouse.y = pos.y;
+        });
+    }
+    
+    onMouseLeave(e) {
+        // Reset mouse position when cursor leaves canvas
+        this.mouse.x = -1;
+        this.mouse.y = -1;
     }
     
     getEventPos(e) {
@@ -372,18 +430,59 @@ class NetworkDemo {
     }
     
     update() {
-        // Add very subtle floating motion to non-dragged, non-captured nodes
+        const canvasWidth = this.canvas.width / window.devicePixelRatio;
+        const canvasHeight = this.canvas.height / window.devicePixelRatio;
+        
         for (let node of this.nodes) {
             if (!node.isDragging && !node.captured) {
-                const time = Date.now() * 0.001;
-                node.x += Math.sin(time + node.id * 0.1) * 0.05;
-                node.y += Math.cos(time * 1.1 + node.id * 0.1) * 0.05;
+                // Mouse interaction effects (inspired by particle systems)
+                const distanceToMouse = Math.sqrt(
+                    (this.mouse.x - node.x) ** 2 + (this.mouse.y - node.y) ** 2
+                );
                 
-                // Keep nodes in bounds
-                const canvasWidth = this.canvas.width / window.devicePixelRatio;
-                const canvasHeight = this.canvas.height / window.devicePixelRatio;
-                node.x = Math.max(node.radius, Math.min(canvasWidth - node.radius, node.x));
-                node.y = Math.max(node.radius, Math.min(canvasHeight - node.radius, node.y));
+                if (distanceToMouse < this.mouseEffectRadius) {
+                    const dx = node.x - this.mouse.x;
+                    const dy = node.y - this.mouse.y;
+                    const angle = Math.atan2(dy, dx);
+                    const force = (this.mouseEffectRadius - distanceToMouse) / this.mouseEffectRadius;
+                    
+                    if (this.mouseRepulsion) {
+                        // Repulsion effect (like kangstephen94/particles)
+                        const repulsionForce = force * this.mouseForce;
+                        node.velocity.x += Math.cos(angle) * repulsionForce;
+                        node.velocity.y += Math.sin(angle) * repulsionForce;
+                    } else if (this.mouseAttraction) {
+                        // Attraction effect
+                        const attractionForce = force * this.mouseForce * -1;
+                        node.velocity.x += Math.cos(angle) * attractionForce;
+                        node.velocity.y += Math.sin(angle) * attractionForce;
+                    }
+                }
+                
+                // Apply physics (inspired by AlgoMystique/ParticleSystems-Physics)
+                node.x += node.velocity.x;
+                node.y += node.velocity.y;
+                
+                // Apply friction
+                node.velocity.x *= this.friction;
+                node.velocity.y *= this.friction;
+                
+                // Subtle floating motion when no mouse interaction
+                if (distanceToMouse > this.mouseEffectRadius) {
+                    const time = Date.now() * 0.001;
+                    node.x += Math.sin(time + node.id * 0.1) * 0.05;
+                    node.y += Math.cos(time * 1.1 + node.id * 0.1) * 0.05;
+                }
+                
+                // Keep nodes in bounds with bounce
+                if (node.x <= node.radius || node.x >= canvasWidth - node.radius) {
+                    node.velocity.x *= -0.8; // Bounce with energy loss
+                    node.x = Math.max(node.radius, Math.min(canvasWidth - node.radius, node.x));
+                }
+                if (node.y <= node.radius || node.y >= canvasHeight - node.radius) {
+                    node.velocity.y *= -0.8; // Bounce with energy loss
+                    node.y = Math.max(node.radius, Math.min(canvasHeight - node.radius, node.y));
+                }
             }
         }
     }
@@ -392,8 +491,17 @@ class NetworkDemo {
         const canvasWidth = this.canvas.width / window.devicePixelRatio;
         const canvasHeight = this.canvas.height / window.devicePixelRatio;
         
-        // Clear canvas with transparent background
-        this.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+        if (this.showTrails) {
+            // Fade previous frame for trail effect
+            this.ctx.fillStyle = 'rgba(10, 10, 10, 0.05)';
+            this.ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+        } else {
+            // Clear canvas with transparent background
+            this.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+        }
+        
+        // Draw mouse effect radius (debug)
+        this.drawMouseEffect();
         
         // Draw connections
         this.drawConnections();
@@ -429,15 +537,47 @@ class NetworkDemo {
         }
     }
     
+    drawMouseEffect() {
+        // Subtle mouse effect visualization
+        if (this.mouse.x > 0 && this.mouse.y > 0) {
+            const gradient = this.ctx.createRadialGradient(
+                this.mouse.x, this.mouse.y, 0,
+                this.mouse.x, this.mouse.y, this.mouseEffectRadius
+            );
+            gradient.addColorStop(0, 'rgba(255, 170, 0, 0.05)');
+            gradient.addColorStop(1, 'rgba(255, 170, 0, 0)');
+            
+            this.ctx.fillStyle = gradient;
+            this.ctx.beginPath();
+            this.ctx.arc(this.mouse.x, this.mouse.y, this.mouseEffectRadius, 0, Math.PI * 2);
+            this.ctx.fill();
+        }
+    }
+
     drawNodes() {
         for (let node of this.nodes) {
             if (node.captured) continue;
             
-            // Enhanced glow for dragged nodes
-            const glowIntensity = node.isDragging ? 0.8 : 0.4;
-            const glowRadius = node.isDragging ? node.radius * 4 : node.radius * 2;
+            // Calculate distance to mouse for enhanced effects
+            const distanceToMouse = Math.sqrt(
+                (this.mouse.x - node.x) ** 2 + (this.mouse.y - node.y) ** 2
+            );
+            const inMouseRange = distanceToMouse < this.mouseEffectRadius;
             
-            // Node glow
+            // Enhanced glow for dragged nodes and nodes near mouse
+            let glowIntensity = 0.4;
+            let glowRadius = node.radius * 2;
+            
+            if (node.isDragging) {
+                glowIntensity = 0.9;
+                glowRadius = node.radius * 5;
+            } else if (inMouseRange) {
+                const proximity = 1 - (distanceToMouse / this.mouseEffectRadius);
+                glowIntensity = 0.4 + (proximity * 0.4);
+                glowRadius = node.radius * (2 + proximity * 2);
+            }
+            
+            // Node glow with dynamic intensity
             const gradient = this.ctx.createRadialGradient(
                 node.x, node.y, 0,
                 node.x, node.y, glowRadius
@@ -450,15 +590,20 @@ class NetworkDemo {
             this.ctx.arc(node.x, node.y, glowRadius, 0, Math.PI * 2);
             this.ctx.fill();
             
-            // Node core
+            // Node core with dynamic size
+            const coreRadius = node.radius + (inMouseRange ? Math.sin(Date.now() * 0.01) * 0.5 : 0);
             this.ctx.fillStyle = node.color;
             this.ctx.beginPath();
-            this.ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+            this.ctx.arc(node.x, node.y, coreRadius, 0, Math.PI * 2);
             this.ctx.fill();
             
-            // Highlight if being dragged
+            // Highlight effects
             if (node.isDragging) {
                 this.ctx.strokeStyle = '#ffffff';
+                this.ctx.lineWidth = 2;
+                this.ctx.stroke();
+            } else if (inMouseRange) {
+                this.ctx.strokeStyle = node.color + '80';
                 this.ctx.lineWidth = 1;
                 this.ctx.stroke();
             }

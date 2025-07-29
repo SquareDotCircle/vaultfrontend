@@ -340,6 +340,55 @@ body.scrollable {
     font-weight: 500;
 }
 
+.network-controls {
+    position: absolute;
+    top: var(--space-xl);
+    left: var(--space-xl);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    background: rgba(10, 10, 10, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
+    z-index: 10;
+}
+
+.control-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-right: var(--space-sm);
+}
+
+.control-btn {
+    background: transparent;
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    font-weight: 500;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.control-btn:hover {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+.control-btn.active {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+    color: var(--primary-bg);
+}
+
 /* Hero responsive adjustments */
 @media (max-width: 1024px) {
     .hero-content {
@@ -379,6 +428,25 @@ body.scrollable {
     
     .captured-count {
         font-size: 0.5rem;
+    }
+    
+    .network-controls {
+        top: var(--space-md);
+        left: var(--space-md);
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-xs);
+    }
+    
+    .control-label {
+        font-size: 0.625rem;
+        margin-right: 0;
+        margin-bottom: var(--space-xs);
+    }
+    
+    .control-btn {
+        font-size: 0.5rem;
+        padding: var(--space-xs);
     }
 }
 
