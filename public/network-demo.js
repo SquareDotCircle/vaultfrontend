@@ -5,13 +5,19 @@ class NetworkDemo {
         this.nodes = [];
         this.connections = [];
         this.draggedNode = null;
+        this.draggedGroup = [];
         this.capturedNodes = [];
         this.mouse = { x: 0, y: 0 };
         this.animationId = null;
         
         this.driveZone = {
-            x: 0, y: 0, width: 120, height: 120
+            x: 0, y: 0, width: 140, height: 140
         };
+        
+        // Spring physics constants
+        this.springStrength = 0.02;
+        this.dampening = 0.95;
+        this.maxConnectionDistance = 120;
         
         this.init();
     }
@@ -27,43 +33,61 @@ class NetworkDemo {
     
     resizeCanvas() {
         const rect = this.canvas.getBoundingClientRect();
-        this.canvas.width = rect.width;
-        this.canvas.height = rect.height;
+        this.canvas.width = rect.width * window.devicePixelRatio;
+        this.canvas.height = rect.height * window.devicePixelRatio;
+        this.canvas.style.width = rect.width + 'px';
+        this.canvas.style.height = rect.height + 'px';
+        this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
         
         // Update drive zone position (bottom right)
-        this.driveZone.x = this.canvas.width - 140;
-        this.driveZone.y = this.canvas.height - 140;
+        this.driveZone.x = rect.width - 160;
+        this.driveZone.y = rect.height - 160;
     }
     
     createNodes() {
-        const nodeCount = 25;
-        const centerX = this.canvas.width / 2;
-        const centerY = this.canvas.height / 2;
+        const nodeCount = 120; // Much more nodes!
+        const canvasWidth = this.canvas.width / window.devicePixelRatio;
+        const canvasHeight = this.canvas.height / window.devicePixelRatio;
         
-        for (let i = 0; i < nodeCount; i++) {
-            // Create nodes in a more distributed pattern
-            const angle = (i / nodeCount) * Math.PI * 2;
-            const radius = 50 + Math.random() * 150;
-            const x = centerX + Math.cos(angle) * radius + (Math.random() - 0.5) * 100;
-            const y = centerY + Math.sin(angle) * radius + (Math.random() - 0.5) * 100;
+        // Create clusters of nodes
+        const clusterCount = 8;
+        const nodesPerCluster = Math.floor(nodeCount / clusterCount);
+        
+        for (let cluster = 0; cluster < clusterCount; cluster++) {
+            const clusterX = (cluster % 4) * (canvasWidth / 4) + canvasWidth / 8;
+            const clusterY = Math.floor(cluster / 4) * (canvasHeight / 2) + canvasHeight / 4;
+            const clusterRadius = 80 + Math.random() * 60;
             
-            this.nodes.push({
-                id: i,
-                x: Math.max(20, Math.min(this.canvas.width - 20, x)),
-                y: Math.max(20, Math.min(this.canvas.height - 20, y)),
-                radius: 4 + Math.random() * 6,
-                color: this.getNodeColor(),
-                connections: [],
-                captured: false,
-                velocity: { x: 0, y: 0 }
-            });
+            for (let i = 0; i < nodesPerCluster; i++) {
+                const angle = (i / nodesPerCluster) * Math.PI * 2 + Math.random() * 0.5;
+                const radius = Math.random() * clusterRadius;
+                const x = clusterX + Math.cos(angle) * radius;
+                const y = clusterY + Math.sin(angle) * radius;
+                
+                this.nodes.push({
+                    id: cluster * nodesPerCluster + i,
+                    x: Math.max(20, Math.min(canvasWidth - 20, x)),
+                    y: Math.max(20, Math.min(canvasHeight - 20, y)),
+                    originalX: x,
+                    originalY: y,
+                    radius: 3 + Math.random() * 4,
+                    color: this.getNodeColor(cluster),
+                    cluster: cluster,
+                    connections: [],
+                    captured: false,
+                    velocity: { x: 0, y: 0 },
+                    force: { x: 0, y: 0 },
+                    isDragging: false,
+                    springDistance: 0
+                });
+            }
         }
         
         this.createConnections();
     }
     
-    getNodeColor() {
-        const colors = [
+    getNodeColor(cluster) {
+        const clusterColors = [
             '#ffaa00', // Primary accent
             '#ff6b6b', // Red
             '#4ecdc4', // Teal  
@@ -73,12 +97,11 @@ class NetworkDemo {
             '#ff9ff3', // Pink
             '#54a0ff'  // Light blue
         ];
-        return colors[Math.floor(Math.random() * colors.length)];
+        return clusterColors[cluster % clusterColors.length];
     }
     
     createConnections() {
         this.connections = [];
-        const maxDistance = 100;
         
         for (let i = 0; i < this.nodes.length; i++) {
             for (let j = i + 1; j < this.nodes.length; j++) {
@@ -86,13 +109,22 @@ class NetworkDemo {
                 const nodeB = this.nodes[j];
                 const distance = this.getDistance(nodeA, nodeB);
                 
-                if (distance < maxDistance) {
+                // Connect nodes within the same cluster or nearby clusters
+                const shouldConnect = (nodeA.cluster === nodeB.cluster && distance < this.maxConnectionDistance) ||
+                                    (Math.abs(nodeA.cluster - nodeB.cluster) <= 1 && distance < 80);
+                
+                if (shouldConnect) {
                     this.connections.push({
                         nodeA: i,
                         nodeB: j,
                         distance: distance,
-                        opacity: 1 - (distance / maxDistance)
+                        restLength: distance,
+                        opacity: 1 - (distance / this.maxConnectionDistance)
                     });
+                    
+                    // Add connection references to nodes
+                    nodeA.connections.push(j);
+                    nodeB.connections.push(i);
                 }
             }
         }
@@ -139,23 +171,68 @@ class NetworkDemo {
         let closestNode = null;
         let closestDistance = Infinity;
         
-        for (let node of this.nodes) {
+        for (let i = 0; i < this.nodes.length; i++) {
+            const node = this.nodes[i];
             if (node.captured) continue;
             
             const distance = Math.sqrt(
                 (pos.x - node.x) ** 2 + (pos.y - node.y) ** 2
             );
             
-            if (distance < node.radius + 10 && distance < closestDistance) {
+            if (distance < node.radius + 15 && distance < closestDistance) {
                 closestDistance = distance;
-                closestNode = node;
+                closestNode = { node, index: i };
             }
         }
         
         if (closestNode) {
-            this.draggedNode = closestNode;
+            this.draggedNode = closestNode.node;
+            this.buildDragGroup(closestNode.index);
             this.canvas.style.cursor = 'grabbing';
         }
+    }
+    
+    buildDragGroup(startIndex) {
+        // Build a group of connected nodes that will move together
+        this.draggedGroup = [];
+        const visited = new Set();
+        const queue = [{ index: startIndex, distance: 0 }];
+        const maxDistance = 2; // How many connection hops to include
+        
+        while (queue.length > 0) {
+            const { index, distance } = queue.shift();
+            
+            if (visited.has(index) || distance > maxDistance) continue;
+            visited.add(index);
+            
+            const node = this.nodes[index];
+            if (node.captured) continue;
+            
+            this.draggedGroup.push({
+                node: node,
+                index: index,
+                distance: distance,
+                originalOffset: { 
+                    x: node.x - this.draggedNode.x, 
+                    y: node.y - this.draggedNode.y 
+                }
+            });
+            
+            // Add connected nodes to queue
+            if (distance < maxDistance) {
+                for (const connectedIndex of node.connections) {
+                    if (!visited.has(connectedIndex)) {
+                        queue.push({ index: connectedIndex, distance: distance + 1 });
+                    }
+                }
+            }
+        }
+        
+        // Mark all nodes in group as being dragged
+        this.draggedGroup.forEach(item => {
+            item.node.isDragging = true;
+            item.node.springDistance = item.distance;
+        });
     }
     
     onMouseMove(e) {
@@ -172,9 +249,35 @@ class NetworkDemo {
     updateDrag(pos) {
         this.mouse = pos;
         
-        if (this.draggedNode) {
+        if (this.draggedNode && this.draggedGroup.length > 0) {
+            // Update main dragged node position
             this.draggedNode.x = pos.x;
             this.draggedNode.y = pos.y;
+            
+            // Update connected nodes with spring physics
+            this.draggedGroup.forEach(item => {
+                if (item.node === this.draggedNode) return;
+                
+                // Calculate spring force based on distance from main node
+                const springFactor = 1 - (item.distance * 0.3); // Weaker for further nodes
+                const targetX = this.draggedNode.x + item.originalOffset.x * springFactor;
+                const targetY = this.draggedNode.y + item.originalOffset.y * springFactor;
+                
+                // Apply spring physics
+                const dx = targetX - item.node.x;
+                const dy = targetY - item.node.y;
+                
+                item.node.velocity.x += dx * this.springStrength * springFactor;
+                item.node.velocity.y += dy * this.springStrength * springFactor;
+                
+                // Apply velocity
+                item.node.x += item.node.velocity.x;
+                item.node.y += item.node.velocity.y;
+                
+                // Apply dampening
+                item.node.velocity.x *= this.dampening;
+                item.node.velocity.y *= this.dampening;
+            });
         }
     }
     
@@ -189,12 +292,28 @@ class NetworkDemo {
     
     endDrag() {
         if (this.draggedNode) {
-            // Check if node is in the drive zone
-            if (this.isInDriveZone(this.draggedNode)) {
-                this.captureNode(this.draggedNode);
-            }
+            // Check if any nodes in the group are in the drive zone
+            const capturedInThisSession = [];
+            
+            this.draggedGroup.forEach(item => {
+                if (this.isInDriveZone(item.node)) {
+                    capturedInThisSession.push(item.node);
+                }
+            });
+            
+            // Capture all nodes that entered the drive zone
+            capturedInThisSession.forEach(node => {
+                this.captureNode(node);
+            });
+            
+            // Reset dragging state
+            this.draggedGroup.forEach(item => {
+                item.node.isDragging = false;
+                item.node.springDistance = 0;
+            });
             
             this.draggedNode = null;
+            this.draggedGroup = [];
             this.canvas.style.cursor = 'grab';
         }
     }
@@ -207,21 +326,23 @@ class NetworkDemo {
     }
     
     captureNode(node) {
+        if (node.captured) return;
+        
         node.captured = true;
         this.capturedNodes.push(node);
         
         // Update the counter in the UI
         const counter = document.querySelector('.captured-count');
         if (counter) {
-            counter.textContent = `${this.capturedNodes.length} nodes secured`;
+            counter.textContent = `${this.capturedNodes.length} AI nodes secured`;
         }
         
-        // Add some visual feedback
+        // Add capture effect
         this.createCaptureEffect(node);
     }
     
     createCaptureEffect(node) {
-        // Simple flash effect
+        // Flash effect
         const originalColor = node.color;
         node.color = '#ffaa00';
         
@@ -229,7 +350,7 @@ class NetworkDemo {
             if (node.captured) {
                 node.color = originalColor;
             }
-        }, 200);
+        }, 300);
     }
     
     animate() {
@@ -239,27 +360,28 @@ class NetworkDemo {
     }
     
     update() {
-        // Update connections based on current node positions
-        this.createConnections();
-        
-        // Add subtle movement to non-dragged, non-captured nodes
+        // Add very subtle floating motion to non-dragged, non-captured nodes
         for (let node of this.nodes) {
-            if (node !== this.draggedNode && !node.captured) {
-                // Very subtle floating motion
-                node.x += Math.sin(Date.now() * 0.001 + node.id) * 0.1;
-                node.y += Math.cos(Date.now() * 0.0015 + node.id) * 0.1;
+            if (!node.isDragging && !node.captured) {
+                const time = Date.now() * 0.001;
+                node.x += Math.sin(time + node.id * 0.1) * 0.05;
+                node.y += Math.cos(time * 1.1 + node.id * 0.1) * 0.05;
                 
                 // Keep nodes in bounds
-                node.x = Math.max(node.radius, Math.min(this.canvas.width - node.radius, node.x));
-                node.y = Math.max(node.radius, Math.min(this.canvas.height - node.radius, node.y));
+                const canvasWidth = this.canvas.width / window.devicePixelRatio;
+                const canvasHeight = this.canvas.height / window.devicePixelRatio;
+                node.x = Math.max(node.radius, Math.min(canvasWidth - node.radius, node.x));
+                node.y = Math.max(node.radius, Math.min(canvasHeight - node.radius, node.y));
             }
         }
     }
     
     draw() {
-        // Clear canvas
-        this.ctx.fillStyle = '#0a0a0a';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        const canvasWidth = this.canvas.width / window.devicePixelRatio;
+        const canvasHeight = this.canvas.height / window.devicePixelRatio;
+        
+        // Clear canvas with transparent background
+        this.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
         
         // Draw connections
         this.drawConnections();
@@ -274,6 +396,8 @@ class NetworkDemo {
     }
     
     drawConnections() {
+        this.ctx.lineWidth = 0.5;
+        
         for (let connection of this.connections) {
             const nodeA = this.nodes[connection.nodeA];
             const nodeB = this.nodes[connection.nodeB];
@@ -281,11 +405,14 @@ class NetworkDemo {
             // Skip connections to captured nodes
             if (nodeA.captured || nodeB.captured) continue;
             
+            // Highlight connections in drag group
+            const isInDragGroup = nodeA.isDragging && nodeB.isDragging;
+            const opacity = isInDragGroup ? 0.8 : 0.2;
+            
             this.ctx.beginPath();
             this.ctx.moveTo(nodeA.x, nodeA.y);
             this.ctx.lineTo(nodeB.x, nodeB.y);
-            this.ctx.strokeStyle = `rgba(255, 170, 0, ${connection.opacity * 0.3})`;
-            this.ctx.lineWidth = 1;
+            this.ctx.strokeStyle = `rgba(255, 170, 0, ${opacity * connection.opacity})`;
             this.ctx.stroke();
         }
     }
@@ -294,17 +421,21 @@ class NetworkDemo {
         for (let node of this.nodes) {
             if (node.captured) continue;
             
+            // Enhanced glow for dragged nodes
+            const glowIntensity = node.isDragging ? 0.8 : 0.4;
+            const glowRadius = node.isDragging ? node.radius * 4 : node.radius * 2;
+            
             // Node glow
             const gradient = this.ctx.createRadialGradient(
                 node.x, node.y, 0,
-                node.x, node.y, node.radius * 3
+                node.x, node.y, glowRadius
             );
-            gradient.addColorStop(0, node.color + '80');
+            gradient.addColorStop(0, node.color + Math.floor(glowIntensity * 255).toString(16).padStart(2, '0'));
             gradient.addColorStop(1, node.color + '00');
             
             this.ctx.fillStyle = gradient;
             this.ctx.beginPath();
-            this.ctx.arc(node.x, node.y, node.radius * 3, 0, Math.PI * 2);
+            this.ctx.arc(node.x, node.y, glowRadius, 0, Math.PI * 2);
             this.ctx.fill();
             
             // Node core
@@ -314,9 +445,9 @@ class NetworkDemo {
             this.ctx.fill();
             
             // Highlight if being dragged
-            if (node === this.draggedNode) {
+            if (node.isDragging) {
                 this.ctx.strokeStyle = '#ffffff';
-                this.ctx.lineWidth = 2;
+                this.ctx.lineWidth = 1;
                 this.ctx.stroke();
             }
         }
@@ -325,7 +456,7 @@ class NetworkDemo {
     drawDriveZoneHighlight() {
         this.ctx.strokeStyle = '#ffaa00';
         this.ctx.lineWidth = 2;
-        this.ctx.setLineDash([5, 5]);
+        this.ctx.setLineDash([8, 8]);
         this.ctx.strokeRect(
             this.driveZone.x, 
             this.driveZone.y, 
