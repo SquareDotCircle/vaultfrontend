@@ -17,7 +17,7 @@ class NetworkDemo {
         // Spring physics constants
         this.springStrength = 0.02;
         this.dampening = 0.95;
-        this.maxConnectionDistance = 120;
+        this.maxConnectionDistance = 100;
         
         this.init();
     }
@@ -45,49 +45,53 @@ class NetworkDemo {
     }
     
     createNodes() {
-        const nodeCount = 120; // Much more nodes!
+        const nodeCount = 150; // Even more nodes for a dense cloud!
         const canvasWidth = this.canvas.width / window.devicePixelRatio;
         const canvasHeight = this.canvas.height / window.devicePixelRatio;
         
-        // Create clusters of nodes
-        const clusterCount = 8;
-        const nodesPerCluster = Math.floor(nodeCount / clusterCount);
+        // Create one massive interconnected cloud
+        const centerX = canvasWidth / 2;
+        const centerY = canvasHeight / 2;
+        const maxRadius = Math.min(canvasWidth, canvasHeight) * 0.4;
         
-        for (let cluster = 0; cluster < clusterCount; cluster++) {
-            const clusterX = (cluster % 4) * (canvasWidth / 4) + canvasWidth / 8;
-            const clusterY = Math.floor(cluster / 4) * (canvasHeight / 2) + canvasHeight / 4;
-            const clusterRadius = 80 + Math.random() * 60;
+        for (let i = 0; i < nodeCount; i++) {
+            // Use multiple distribution methods for organic cloud shape
+            let x, y;
             
-            for (let i = 0; i < nodesPerCluster; i++) {
-                const angle = (i / nodesPerCluster) * Math.PI * 2 + Math.random() * 0.5;
-                const radius = Math.random() * clusterRadius;
-                const x = clusterX + Math.cos(angle) * radius;
-                const y = clusterY + Math.sin(angle) * radius;
-                
-                this.nodes.push({
-                    id: cluster * nodesPerCluster + i,
-                    x: Math.max(20, Math.min(canvasWidth - 20, x)),
-                    y: Math.max(20, Math.min(canvasHeight - 20, y)),
-                    originalX: x,
-                    originalY: y,
-                    radius: 3 + Math.random() * 4,
-                    color: this.getNodeColor(cluster),
-                    cluster: cluster,
-                    connections: [],
-                    captured: false,
-                    velocity: { x: 0, y: 0 },
-                    force: { x: 0, y: 0 },
-                    isDragging: false,
-                    springDistance: 0
-                });
+            if (Math.random() < 0.7) {
+                // Main cloud distribution - roughly circular but organic
+                const angle = Math.random() * Math.PI * 2;
+                const radius = Math.pow(Math.random(), 0.6) * maxRadius; // Bias toward center
+                x = centerX + Math.cos(angle) * radius + (Math.random() - 0.5) * 80;
+                y = centerY + Math.sin(angle) * radius + (Math.random() - 0.5) * 80;
+            } else {
+                // Scattered outliers for more organic feel
+                x = Math.random() * canvasWidth;
+                y = Math.random() * canvasHeight;
             }
+            
+            this.nodes.push({
+                id: i,
+                x: Math.max(20, Math.min(canvasWidth - 20, x)),
+                y: Math.max(20, Math.min(canvasHeight - 20, y)),
+                originalX: x,
+                originalY: y,
+                radius: 2.5 + Math.random() * 4,
+                color: this.getNodeColor(i),
+                connections: [],
+                captured: false,
+                velocity: { x: 0, y: 0 },
+                force: { x: 0, y: 0 },
+                isDragging: false,
+                springDistance: 0
+            });
         }
         
         this.createConnections();
     }
     
-    getNodeColor(cluster) {
-        const clusterColors = [
+    getNodeColor(nodeId) {
+        const colors = [
             '#ffaa00', // Primary accent
             '#ff6b6b', // Red
             '#4ecdc4', // Teal  
@@ -95,9 +99,19 @@ class NetworkDemo {
             '#96ceb4', // Green
             '#feca57', // Yellow
             '#ff9ff3', // Pink
-            '#54a0ff'  // Light blue
+            '#54a0ff', // Light blue
+            '#a29bfe', // Purple
+            '#fd79a8', // Rose
+            '#e17055', // Orange
+            '#00b894'  // Emerald
         ];
-        return clusterColors[cluster % clusterColors.length];
+        
+        // Create some variation but with tendencies toward certain colors
+        const baseIndex = Math.floor(nodeId / 15) % colors.length;
+        const variation = Math.floor(Math.random() * 3) - 1;
+        const finalIndex = Math.max(0, Math.min(colors.length - 1, baseIndex + variation));
+        
+        return colors[finalIndex];
     }
     
     createConnections() {
@@ -109,17 +123,15 @@ class NetworkDemo {
                 const nodeB = this.nodes[j];
                 const distance = this.getDistance(nodeA, nodeB);
                 
-                // Connect nodes within the same cluster or nearby clusters
-                const shouldConnect = (nodeA.cluster === nodeB.cluster && distance < this.maxConnectionDistance) ||
-                                    (Math.abs(nodeA.cluster - nodeB.cluster) <= 1 && distance < 80);
-                
-                if (shouldConnect) {
+                // Create one massive interconnected cloud
+                // Connect nodes based on distance only, creating organic web
+                if (distance < this.maxConnectionDistance) {
                     this.connections.push({
                         nodeA: i,
                         nodeB: j,
                         distance: distance,
                         restLength: distance,
-                        opacity: 1 - (distance / this.maxConnectionDistance)
+                        opacity: Math.max(0.1, 1 - (distance / this.maxConnectionDistance))
                     });
                     
                     // Add connection references to nodes
@@ -197,7 +209,7 @@ class NetworkDemo {
         this.draggedGroup = [];
         const visited = new Set();
         const queue = [{ index: startIndex, distance: 0 }];
-        const maxDistance = 2; // How many connection hops to include
+        const maxDistance = 3; // How many connection hops to include
         
         while (queue.length > 0) {
             const { index, distance } = queue.shift();
