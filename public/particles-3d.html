@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D AI Superintelligence Cloud - Go Offline</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=SF+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: var(--primary-bg);
+            font-family: var(--font-sans);
+        }
+
+        #scene-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 1;
+        }
+
+        .ui-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .control-panel {
+            position: absolute;
+            top: var(--space-xl);
+            left: var(--space-xl);
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            pointer-events: auto;
+            min-width: 300px;
+            max-width: 350px;
+        }
+
+        .panel-title {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            color: var(--accent-primary);
+            margin-bottom: var(--space-md);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            text-align: center;
+        }
+
+        .control-section {
+            margin-bottom: var(--space-lg);
+        }
+
+        .control-label {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-sm);
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .button-group {
+            display: flex;
+            gap: var(--space-xs);
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: transparent;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            font-family: var(--font-mono);
+            font-size: 0.625rem;
+            font-weight: 500;
+            padding: var(--space-xs) var(--space-md);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            pointer-events: auto;
+        }
+
+        .control-btn:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            transform: translateY(-1px);
+        }
+
+        .control-btn.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: var(--primary-bg);
+            box-shadow: 0 0 20px rgba(255, 170, 0, 0.3);
+        }
+
+        .slider-container {
+            margin: var(--space-sm) 0;
+        }
+
+        .slider-wrapper {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .slider {
+            flex: 1;
+            height: 4px;
+            background: var(--surface);
+            border-radius: 2px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 170, 0, 0.5);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 10px rgba(255, 170, 0, 0.5);
+        }
+
+        .slider-value {
+            font-family: var(--font-mono);
+            font-size: 0.625rem;
+            color: var(--accent-primary);
+            min-width: 40px;
+            text-align: right;
+        }
+
+        .stats-panel {
+            position: absolute;
+            bottom: var(--space-xl);
+            left: var(--space-xl);
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: var(--space-md);
+            pointer-events: auto;
+            font-family: var(--font-mono);
+            font-size: 0.625rem;
+            color: var(--text-tertiary);
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin: var(--space-xs) 0;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+        }
+
+        .stat-value {
+            color: var(--accent-primary);
+            font-weight: 600;
+        }
+
+        .vault-zone {
+            position: absolute;
+            bottom: var(--space-xl);
+            right: var(--space-xl);
+            width: 140px;
+            height: 140px;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border: 2px dashed var(--border-subtle);
+            border-radius: var(--radius-xl);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .vault-zone.capturing {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 30px rgba(255, 170, 0, 0.3);
+            transform: scale(1.1);
+        }
+
+        .vault-icon {
+            font-size: 2.5rem;
+            margin-bottom: var(--space-sm);
+        }
+
+        .vault-label {
+            font-family: var(--font-mono);
+            font-size: 0.625rem;
+            color: var(--text-secondary);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--space-xs);
+        }
+
+        .vault-count {
+            font-family: var(--font-mono);
+            font-size: 0.5rem;
+            color: var(--accent-primary);
+            font-weight: 600;
+        }
+
+        .instructions {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: var(--text-tertiary);
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            pointer-events: none;
+            opacity: 0.7;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.8; }
+        }
+
+        .back-nav {
+            position: absolute;
+            top: var(--space-xl);
+            right: var(--space-xl);
+            pointer-events: auto;
+        }
+
+        .back-btn {
+            background: transparent;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: var(--space-sm) var(--space-lg);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .back-btn:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            .control-panel {
+                top: var(--space-md);
+                left: var(--space-md);
+                right: var(--space-md);
+                min-width: auto;
+                max-width: none;
+                padding: var(--space-md);
+            }
+
+            .stats-panel {
+                bottom: var(--space-md);
+                left: var(--space-md);
+                font-size: 0.5rem;
+            }
+
+            .vault-zone {
+                bottom: var(--space-md);
+                right: var(--space-md);
+                width: 100px;
+                height: 100px;
+            }
+
+            .vault-icon {
+                font-size: 2rem;
+            }
+
+            .back-nav {
+                top: var(--space-md);
+                right: var(--space-md);
+            }
+
+            .instructions {
+                font-size: 0.75rem;
+                padding: 0 var(--space-lg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="scene-container"></div>
+    
+    <div class="ui-overlay">
+        <div class="control-panel">
+            <div class="panel-title">AI Network Control</div>
+            
+            <div class="control-section">
+                <label class="control-label">Interaction Mode</label>
+                <div class="button-group">
+                    <button class="control-btn active" data-mode="orbit">Orbit</button>
+                    <button class="control-btn" data-mode="attract">Attract</button>
+                    <button class="control-btn" data-mode="repel">Repel</button>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <label class="control-label">Visual Style</label>
+                <div class="button-group">
+                    <button class="control-btn active" data-visual="particles">Particles</button>
+                    <button class="control-btn" data-visual="connections">Connections</button>
+                    <button class="control-btn" data-visual="both">Both</button>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <label class="control-label">Particle Count</label>
+                <div class="slider-container">
+                    <div class="slider-wrapper">
+                        <input type="range" class="slider" id="particle-count" min="200" max="2000" value="800" step="50">
+                        <span class="slider-value" id="particle-count-value">800</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <label class="control-label">Connection Distance</label>
+                <div class="slider-container">
+                    <div class="slider-wrapper">
+                        <input type="range" class="slider" id="connection-distance" min="30" max="120" value="60" step="10">
+                        <span class="slider-value" id="connection-distance-value">60</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <label class="control-label">Animation Speed</label>
+                <div class="slider-container">
+                    <div class="slider-wrapper">
+                        <input type="range" class="slider" id="animation-speed" min="0.1" max="3" value="1" step="0.1">
+                        <span class="slider-value" id="animation-speed-value">1.0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-panel">
+            <div class="stat-row">
+                <span class="stat-label">FPS:</span>
+                <span class="stat-value" id="fps-counter">60</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Particles:</span>
+                <span class="stat-value" id="particle-counter">800</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Connections:</span>
+                <span class="stat-value" id="connection-counter">0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Captured:</span>
+                <span class="stat-value" id="captured-counter">0</span>
+            </div>
+        </div>
+
+        <div class="vault-zone" id="vault-zone">
+            <div class="vault-icon">🔒</div>
+            <div class="vault-label">Your Vault</div>
+            <div class="vault-count"><span id="vault-count">0</span> AI Nodes</div>
+        </div>
+
+        <div class="instructions" id="instructions">
+            <div>🖱️ Drag to rotate • 🔥 Right-click to capture AI networks</div>
+            <div>⚡ Experience the power of superintelligence control</div>
+        </div>
+
+        <div class="back-nav">
+            <a href="index.html" class="back-btn">← Back to Main</a>
+        </div>
+    </div>
+
+    <!-- Three.js from reliable CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r158/three.min.js"></script>
+    <script src="particles-3d.js"></script>
+</body>
+</html> 
