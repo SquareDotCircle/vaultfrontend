@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Particle Test - Simple Version</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #0a0a0a;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+        
+        #container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+        }
+        
+        #debug {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.8);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 100;
+            font-family: monospace;
+            font-size: 12px;
+            max-width: 300px;
+        }
+        
+        .status {
+            margin: 5px 0;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        
+        .success { background: #004400; color: #00ff00; }
+        .error { background: #440000; color: #ff0000; }
+        .info { background: #004444; color: #00ffff; }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    
+    <div id="debug">
+        <h3>🔍 3D Particle System Debug</h3>
+        <div id="status-container">
+            <div class="status info">Starting diagnostics...</div>
+        </div>
+    </div>
+
+    <!-- Three.js from CDN -->
+    <script src="https://unpkg.com/three@0.158.0/build/three.min.js"></script>
+    
+    <script>
+        console.log('🚀 Simple 3D Test Starting...');
+        
+        const debugContainer = document.getElementById('status-container');
+        
+        function addStatus(message, type = 'info') {
+            console.log(message);
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.textContent = message;
+            debugContainer.appendChild(div);
+        }
+        
+        // Test 1: Check if Three.js loaded
+        addStatus('Testing Three.js availability...');
+        if (typeof THREE !== 'undefined') {
+            addStatus('✅ THREE.js loaded successfully', 'success');
+            addStatus(`THREE.js version: ${THREE.REVISION}`, 'info');
+        } else {
+            addStatus('❌ THREE.js failed to load', 'error');
+        }
+        
+        // Test 2: Create basic scene
+        let scene, camera, renderer, particles;
+        
+        try {
+            addStatus('Creating basic Three.js scene...');
+            
+            // Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0a0a0a);
+            addStatus('✅ Scene created', 'success');
+            
+            // Camera
+            const container = document.getElementById('container');
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
+            camera.position.set(0, 0, 300);
+            addStatus('✅ Camera created', 'success');
+            
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+            addStatus('✅ Renderer created and added to DOM', 'success');
+            
+            // Create simple particle system
+            addStatus('Creating particles...');
+            
+            const particleCount = 100;
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+            
+            // Generate particles in a simple cube
+            for (let i = 0; i < particleCount; i++) {
+                const i3 = i * 3;
+                
+                // Random position
+                positions[i3] = (Math.random() - 0.5) * 200;     // x
+                positions[i3 + 1] = (Math.random() - 0.5) * 200; // y  
+                positions[i3 + 2] = (Math.random() - 0.5) * 200; // z
+                
+                // Orange color
+                colors[i3] = 1.0;     // r
+                colors[i3 + 1] = 0.6; // g
+                colors[i3 + 2] = 0.0; // b
+            }
+            
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            
+            const material = new THREE.PointsMaterial({
+                size: 8,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.9
+            });
+            
+            particles = new THREE.Points(geometry, material);
+            scene.add(particles);
+            
+            addStatus(`✅ ${particleCount} particles created and added to scene`, 'success');
+            addStatus(`Particle system position: ${particles.position.x}, ${particles.position.y}, ${particles.position.z}`, 'info');
+            addStatus(`Camera position: ${camera.position.x}, ${camera.position.y}, ${camera.position.z}`, 'info');
+            
+            // Animation loop
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                // Rotate particles
+                if (particles) {
+                    particles.rotation.x += 0.01;
+                    particles.rotation.y += 0.01;
+                }
+                
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+            addStatus('✅ Animation loop started', 'success');
+            addStatus('🎉 If you see rotating orange dots, it works!', 'success');
+            
+        } catch (error) {
+            addStatus(`❌ Error: ${error.message}`, 'error');
+            console.error('Three.js setup error:', error);
+        }
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (camera && renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                addStatus('🔄 Resized to fit window', 'info');
+            }
+        });
+        
+        // Test if the page is being served correctly
+        addStatus(`Page URL: ${window.location.href}`, 'info');
+        addStatus(`User Agent: ${navigator.userAgent.split(' ')[0]}`, 'info');
+    </script>
+</body>
+</html> 
