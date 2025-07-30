@@ -43,15 +43,34 @@ class Network3D {
     }
     
     init() {
+        console.log('🚀 Initializing Network3D...');
+        
         this.setupScene();
+        console.log('✅ Scene setup complete');
+        
         this.setupCamera();
+        console.log('✅ Camera setup complete');
+        
         this.setupRenderer();
+        console.log('✅ Renderer setup complete');
+        
         this.setupControls();
+        console.log('✅ Controls setup complete');
+        
         this.setupRaycaster();
+        console.log('✅ Raycaster setup complete');
+        
         this.createParticleSystem();
+        console.log('✅ Particle system setup complete');
+        
         this.setupEventListeners();
+        console.log('✅ Event listeners setup complete');
+        
         this.setupUI();
+        console.log('✅ UI setup complete');
+        
         this.animate();
+        console.log('✅ Animation started');
         
         // Hide instructions after 5 seconds
         setTimeout(() => {
@@ -85,8 +104,11 @@ class Network3D {
             0.1, 
             2000
         );
-        this.camera.position.set(200, 200, 200);
+        this.camera.position.set(300, 300, 300);
         this.camera.lookAt(0, 0, 0);
+        
+        console.log('Camera positioned at:', this.camera.position);
+        console.log('Camera looking at: 0, 0, 0');
     }
     
     setupRenderer() {
@@ -103,14 +125,20 @@ class Network3D {
     }
     
     setupControls() {
+        console.log('Setting up controls...');
+        console.log('THREE available:', !!window.THREE);
+        console.log('OrbitControls available:', !!window.THREE?.OrbitControls);
+        
         this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
         this.controls.enableDamping = true;
         this.controls.dampingFactor = 0.05;
         this.controls.enableZoom = true;
-        this.controls.autoRotate = false;
+        this.controls.autoRotate = true; // Start with auto-rotate so we can see it working
         this.controls.autoRotateSpeed = 0.5;
         this.controls.maxDistance = 1000;
         this.controls.minDistance = 50;
+        
+        console.log('Controls set up successfully');
     }
     
     setupRaycaster() {
@@ -119,6 +147,8 @@ class Network3D {
     }
     
     createParticleSystem() {
+        console.log('Creating particle system with', this.settings.particleCount, 'particles');
+        
         // Create particle geometry
         this.particleGeometry = new THREE.BufferGeometry();
         const positions = new Float32Array(this.settings.particleCount * 3);
@@ -167,73 +197,24 @@ class Network3D {
         this.particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
         this.particleGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
         
-        // Create particle material with custom shader
-        this.particleMaterial = new THREE.ShaderMaterial({
-            uniforms: {
-                time: { value: 0 },
-                mousePos: { value: new THREE.Vector3() },
-                mouseInfluence: { value: this.settings.mouseInfluence }
-            },
-            vertexShader: `
-                attribute float size;
-                attribute vec3 color;
-                varying vec3 vColor;
-                varying float vIntensity;
-                uniform float time;
-                uniform vec3 mousePos;
-                uniform float mouseInfluence;
-                
-                void main() {
-                    vColor = color;
-                    
-                    vec3 pos = position;
-                    
-                    // Gentle floating animation
-                    pos.x += sin(time * 0.5 + position.y * 0.01) * 2.0;
-                    pos.y += cos(time * 0.3 + position.x * 0.01) * 2.0;
-                    pos.z += sin(time * 0.7 + position.z * 0.01) * 2.0;
-                    
-                    // Mouse influence
-                    float distanceToMouse = distance(pos, mousePos);
-                    vIntensity = 1.0;
-                    if (distanceToMouse < mouseInfluence) {
-                        vIntensity = 1.0 + (1.0 - distanceToMouse / mouseInfluence) * 2.0;
-                    }
-                    
-                    vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-                    gl_Position = projectionMatrix * mvPosition;
-                    gl_PointSize = size * vIntensity * (300.0 / -mvPosition.z);
-                }
-            `,
-            fragmentShader: `
-                varying vec3 vColor;
-                varying float vIntensity;
-                
-                void main() {
-                    // Create circular particles
-                    vec2 center = gl_PointCoord - vec2(0.5);
-                    float dist = length(center);
-                    
-                    if (dist > 0.5) discard;
-                    
-                    // Soft edges
-                    float alpha = 1.0 - smoothstep(0.3, 0.5, dist);
-                    alpha *= vIntensity * 0.8;
-                    
-                    // Glow effect
-                    vec3 glowColor = vColor * (1.0 + vIntensity * 0.5);
-                    
-                    gl_FragColor = vec4(glowColor, alpha);
-                }
-            `,
+        // Create particle material (using simple material first to debug)
+        this.particleMaterial = new THREE.PointsMaterial({
+            size: 5,
+            color: 0xffaa00,
             transparent: true,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false,
+            opacity: 0.8,
+            sizeAttenuation: true,
             vertexColors: true
         });
         
+        console.log('Particle material created');
+        
         this.particleSystem = new THREE.Points(this.particleGeometry, this.particleMaterial);
         this.scene.add(this.particleSystem);
+        
+        console.log('Particle system created and added to scene');
+        console.log('Particle system visible:', this.particleSystem.visible);
+        console.log('Particle count:', this.particleGeometry.attributes.position.count);
         
         this.createConnections();
     }
